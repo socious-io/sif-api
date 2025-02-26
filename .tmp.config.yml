@@ -1,0 +1,47 @@
+env: development
+port: 3000
+host: "http://localhost:3000"
+secret: this-is-secret
+sso:
+  secret: sec
+debug: true
+database: 
+  url: postgresql://socious:passwd@localhost:5432/socious?sslmode=disable
+  sqldir: src/sql
+  migrations: src/sql/migrations
+s3:
+  access_key_id: access_key_id
+  secret_access_key: secret_access_key
+  default_region: ap-northeast-1
+  bucket: bucket
+  cdn_url: https://bucket.s3.default_region.amazonaws.com
+cors:
+  origins:
+    - '*'
+nats:
+  url: nats://127.0.0.1:4222
+  secret: secret
+payment:
+  fiats:
+    - name: STRIPE
+      apikey: sk_[test/live]_[key]
+      service: STRIPE
+      callback: stripe_return_url
+    - name: STRIPE_JP
+      apikey: sk_[test/live]_[key]
+      service: STRIPE
+      callback: stripe_return_url
+  chains:
+    - name: Cardano
+      explorer: BLOCK_EXPLORER_URL
+      contractaddress: CONTRACT_ADDRESS
+      tokens:
+        - name: Ethereum
+          symbol: ETH
+          address: blockchain_address
+          decimals: 8
+      type: EVM
+      mode: MAINNET/TESTNET
+      apikey: api_key
+  # connect_redirect: https://socious.io/api/v2/auth/stripe
+  # client_connect_link: https://webapp2.socious.io/wallet

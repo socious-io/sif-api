@@ -1,0 +1,5 @@
+ALTER TABLE feedbacks 
+ALTER COLUMN mission_id DROP NOT NULL,
+ALTER COLUMN mission_id SET DEFAULT NULL,
+ADD COLUMN contract_id uuid DEFAULT NULL,
+ADD CONSTRAINT fk_contract FOREIGN KEY (contract_id) REFERENCES contracts(id) ON DELETE CASCADE;

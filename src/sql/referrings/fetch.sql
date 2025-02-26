@@ -1,0 +1,1 @@
+SELECT * FROM referrings WHERE id IN(?)

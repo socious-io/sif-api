@@ -1,0 +1,23 @@
+env: development
+port: 3000
+host: "http://localhost:3000"
+secret: this-is-secret
+sso:
+  secret: sec
+debug: true
+database: 
+  url: postgresql://socious:passwd@localhost/socious_test_v3?sslmode=disable
+  sqldir: src/sql
+  migrations: src/sql/migrations
+s3:
+  access_key_id: access_key_id
+  secret_access_key: secret_access_key
+  default_region: default_region
+  bucket: bucket
+  cdn_url: cdn_url
+cors:
+  origins:
+    - '*'
+nats:
+  url: nats://127.0.0.1:4222
+  secret: secret
