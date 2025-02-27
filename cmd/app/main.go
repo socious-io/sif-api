@@ -2,10 +2,11 @@ package main
 
 import (
 	"log"
-	"socious/src/apps"
-	"socious/src/config"
+	"sif/src/apps"
+	"sif/src/config"
 	"time"
 
+	"github.com/socious-io/goaccount"
 	"github.com/socious-io/gopay"
 	database "github.com/socious-io/pkg_database"
 )
@@ -27,6 +28,10 @@ func main() {
 		Fiats:  config.Config.Payment.Fiats,
 	}); err != nil {
 		log.Fatalf("gopay error %v", err)
+	}
+
+	if err := goaccount.Setup(config.Config.SociousID); err != nil {
+		log.Fatalf("goaccount error %v", err)
 	}
 
 	apps.Serve()

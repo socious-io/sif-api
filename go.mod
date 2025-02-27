@@ -1,4 +1,4 @@
-module socious
+module sif
 
 go 1.22.5
 
@@ -38,6 +38,7 @@ require (
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/onsi/ginkgo/v2 v2.20.2 // indirect
 	github.com/onsi/gomega v1.34.2 // indirect
+	github.com/socious-io/goaccount v0.1.5 // indirect
 	github.com/socious-io/gopay v0.0.17 // indirect
 	github.com/stripe/stripe-go/v81 v81.1.1 // indirect
 	go.mongodb.org/mongo-driver v1.14.0 // indirect

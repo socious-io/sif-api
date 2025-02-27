@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"socious/src/config"
+	"sif/src/config"
 	"strconv"
 	"time"
 

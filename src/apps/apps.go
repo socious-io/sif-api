@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"socious/src/apps/views"
-	"socious/src/config"
+	"sif/src/apps/views"
+	"sif/src/config"
 	"time"
 
 	"github.com/gin-contrib/cors"
