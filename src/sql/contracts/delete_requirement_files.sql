@@ -1,2 +1,0 @@
-DELETE FROM contract_requirements_files
-WHERE contract_id=$1

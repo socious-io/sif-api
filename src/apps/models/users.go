@@ -22,11 +22,9 @@ type User struct {
 	Country *string `db:"country" json:"country"`
 	Address *string `db:"address" json:"address"`
 
-	AvatarID   *uuid.UUID     `db:"avatar_id" json:"-"`
 	Avatar     *Media         `db:"-" json:"avatar"`
 	AvatarJson types.JSONText `db:"avatar" json:"-"`
 
-	CoverID   *uuid.UUID     `db:"cover_id" json:"-"`
 	Cover     *Media         `db:"-" json:"cover"`
 	CoverJson types.JSONText `db:"cover" json:"-"`
 

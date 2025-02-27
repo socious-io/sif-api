@@ -34,11 +34,11 @@ type Project struct {
 
 	SocialCause string `db:"social_cause" json:"social_cause"`
 
-	IdentityID   uuid.UUID      `db:"identity_id" json:"-"`
+	IdentityID   *uuid.UUID     `db:"identity_id" json:"-"`
 	Identity     *Identity      `db:"-" json:"identity"`
 	IdentityJson types.JSONText `db:"identity" json:"-"`
 
-	CoverID   uuid.UUID      `db:"cover_id" json:"-"`
+	CoverID   *uuid.UUID     `db:"cover_id" json:"-"`
 	Cover     *Media         `db:"-" json:"cover"`
 	CoverJson types.JSONText `db:"cover" json:"-"`
 
