@@ -10,17 +10,6 @@ import (
 	"github.com/jmoiron/sqlx/types"
 )
 
-type WorkSampleDocuments struct {
-	Id       string `db:"id" json:"id"`
-	Url      string `db:"url" json:"url"`
-	Filename string `db:"filename" json:"filename"`
-}
-
-type WorkSampleType struct {
-	ServiceID uuid.UUID `db:"service_id" json:"service_id"`
-	Document  uuid.UUID `db:"document" json:"document"`
-}
-
 type Project struct {
 	ID uuid.UUID `db:"id" json:"id"`
 

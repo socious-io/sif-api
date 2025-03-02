@@ -14,7 +14,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/socious-io/gopay"
 	database "github.com/socious-io/pkg_database"
 
 	"github.com/gin-gonic/gin"
@@ -51,7 +50,7 @@ func TestSuite(t *testing.T) {
 }
 
 var _ = Describe("Socious Test Suite", Ordered, func() {
-
+	Context("Auth", authGroup)
 })
 
 func init() {
@@ -88,17 +87,25 @@ func bodyExpect(body, expect gin.H) {
 	Expect(body).To(Equal(expect))
 }
 
-func setupTestEnvironment() (*sqlx.DB, *gin.Engine) {
-	config.Init(configPath)
-	parsedURL, _ := url.Parse(config.Config.Database.URL)
-	db := database.Connect(&database.ConnectOption{
+func connectDB() *sqlx.DB {
+	return database.Connect(&database.ConnectOption{
 		URL:         config.Config.Database.URL,
 		SqlDir:      config.Config.Database.SqlDir,
 		MaxRequests: 5,
 		Interval:    30 * time.Second,
 		Timeout:     5 * time.Second,
 	})
+}
 
+func setupTestEnvironment() (*sqlx.DB, *gin.Engine) {
+	config.Init(configPath)
+	parsedURL, _ := url.Parse(config.Config.Database.URL)
+
+	// Note: dp drop to check perv runner may crush before teardown test env
+	dropDB := connectDB()
+	teardownTestEnvironment(dropDB)
+
+	db := connectDB()
 	schemaFile := fmt.Sprintf("%s/schema.sql", config.Config.Database.SqlDir) // Adjust the path if needed
 	schemaContent, err := os.ReadFile(schemaFile)
 	if err != nil {
@@ -120,16 +127,6 @@ func setupTestEnvironment() (*sqlx.DB, *gin.Engine) {
 	}
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
 		log.Fatal(err)
-	}
-
-	//Setting up gopay package
-	if err := gopay.Setup(gopay.Config{
-		DB:     database.GetDB(),
-		Prefix: "gopay",
-		Chains: config.Config.Payment.Chains,
-		Fiats:  config.Config.Payment.Fiats,
-	}); err != nil {
-		log.Fatalf("gopay error %v", err)
 	}
 
 	log.Println("Migrations applied successfully!")

@@ -54,7 +54,7 @@ func projectsGroup(router *gin.Engine) {
 
 		p := new(models.Project)
 		utils.Copy(form, p)
-		p.IdentityID = identity.(*models.Identity).ID
+		p.IdentityID = &identity.(*models.Identity).ID
 		if err := p.Create(ctx.(context.Context)); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return

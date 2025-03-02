@@ -45,6 +45,19 @@ func LoginRequired() gin.HandlerFunc {
 			return
 		}
 		c.Set("user", u)
+
+		var identity *models.Identity
+
+		identityStr := c.GetHeader(http.CanonicalHeaderKey("current-identity"))
+		if identityUUID, err := uuid.Parse(identityStr); err == nil {
+			identity, _ = models.GetIdentity(identityUUID)
+		}
+		if identity == nil {
+			identity, _ = models.GetIdentity(u.ID)
+		}
+
+		c.Set("identity", identity)
+
 		c.Next()
 	}
 }

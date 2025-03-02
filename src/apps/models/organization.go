@@ -26,11 +26,9 @@ type Organization struct {
 	Mission *string `db:"mission" json:"mission"`
 	Culture *string `db:"culture" json:"culture"`
 
-	LogoId   *uuid.UUID     `db:"logo_id" json:"-"`
 	Logo     *Media         `db:"-" json:"logo"`
 	LogoJson types.JSONText `db:"logo" json:"-"`
 
-	CoverId   *uuid.UUID     `db:"cover_id" json:"-"`
 	Cover     *Media         `db:"-" json:"cover"`
 	CoverJson types.JSONText `db:"cover" json:"-"`
 
@@ -71,11 +69,6 @@ func (*Organization) ToggleHiring() error {
 	return nil
 }
 
-func getAllOrganizations() ([]Organization, error) {
-	result := []Organization{}
-	return result, nil
-}
-
 func GetOrganization(id uuid.UUID, identity uuid.UUID) (*Organization, error) {
 	o := new(Organization)
 	if err := database.Fetch(o, id.String()); err != nil {
@@ -95,13 +88,4 @@ func GetOrganizationByShortname(shortname string, identity uuid.UUID) (*Organiza
 		return nil, err
 	}
 	return o, nil
-}
-
-func shortnameExistsOrganization(shortname string) (bool, error) {
-	return false, nil
-}
-
-func searchOrganizations(query string) ([]Organization, error) { // Do we need to implement this?
-	result := []Organization{}
-	return result, nil
 }
