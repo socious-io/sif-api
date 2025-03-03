@@ -113,8 +113,8 @@ jobs:
       - name: Docker run
         run: |
           docker pull ${{ steps.meta.outputs.tags }}
-          docker ps -qa --filter "name=sif" | grep -q . && docker stop sif && docker rm -fv sif
-          docker run -d --restart always -p 5063:5063 -h sif --network sif_default --name sif ${{ steps.meta.outputs.tags }}
+          docker ps -qa --filter "name=sif-api" | grep -q . && docker stop sif-api && docker rm -fv sif-api
+          docker run -d --restart always -p 5066:5066 -h sif-api --network sif_default --name sif-api ${{ steps.meta.outputs.tags }}
 
       # - name: Extract Docker metadata
       #   id: meta-worker
