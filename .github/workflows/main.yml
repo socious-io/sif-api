@@ -30,8 +30,8 @@ jobs:
 
       - name: Copying build & test environment
         run: |
-          cp /etc/socious-api-v3/config.yml .
-          cp /etc/socious-api-v3/test.config.yml .
+          cp /etc/sif/config.yml .
+          cp /etc/sif/test.config.yml .
 
       - name: Downloading dependencies
         run: |
@@ -113,8 +113,8 @@ jobs:
       - name: Docker run
         run: |
           docker pull ${{ steps.meta.outputs.tags }}
-          docker ps -qa --filter "name=socious-api-v3" | grep -q . && docker stop socious-api-v3 && docker rm -fv socious-api-v3
-          docker run -d --restart always -p 5063:5063 -h socious-api-v3 --network sociousapiv3_default --name socious-api-v3 ${{ steps.meta.outputs.tags }}
+          docker ps -qa --filter "name=sif" | grep -q . && docker stop sif && docker rm -fv sif
+          docker run -d --restart always -p 5063:5063 -h sif --network sif_default --name sif ${{ steps.meta.outputs.tags }}
 
       # - name: Extract Docker metadata
       #   id: meta-worker

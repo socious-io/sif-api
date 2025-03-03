@@ -34,7 +34,12 @@ func (oc *OauthConnect) Upsert(ctx context.Context) error {
 	rows, err := database.Query(
 		ctx, "oauth_connects/upsert",
 		oc.Provider,
-		//TODO ....
+		oc.IdentityId,
+		oc.MatrixUniqueID,
+		oc.AccessToken,
+		oc.RefreshToken,
+		oc.Meta,
+		oc.ExpiredAt,
 	)
 	if err != nil {
 		return err

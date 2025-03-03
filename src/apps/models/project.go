@@ -52,7 +52,15 @@ func (p *Project) Create(ctx context.Context) error {
 	rows, err := database.Query(
 		ctx,
 		"projects/create",
-		// TODO: .....
+		p.Title,
+		p.Description,
+		p.City,
+		p.Country,
+		p.SocialCause,
+		p.IdentityID,
+		p.CoverID,
+		p.WalletAddress,
+		p.WalletEnv,
 	)
 	if err != nil {
 		return err
@@ -75,7 +83,13 @@ func (p *Project) Update(ctx context.Context) error {
 		p.ID,
 		p.Title,
 		p.Description,
-		// TODO: .....
+		p.City,
+		p.Country,
+		p.SocialCause,
+		p.IdentityID,
+		p.CoverID,
+		p.WalletAddress,
+		p.WalletEnv,
 	)
 
 	if err != nil {

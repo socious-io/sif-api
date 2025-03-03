@@ -70,7 +70,8 @@ func (u *User) UpdateProfile(ctx context.Context) error {
 		ctx,
 		"users/update_profile",
 		u.ID, u.FirstName, u.LastName, u.Username,
-		// TODO: ....
+		u.City, u.Country, u.Address,
+		u.Language,
 	)
 	if err != nil {
 		return err

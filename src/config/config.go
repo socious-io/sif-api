@@ -41,7 +41,7 @@ type ConfigType struct {
 		Fiats  gopay.Fiats  `mapstructure:"fiats"`
 	} `mapstructure:"payment"`
 
-	SociousID goaccount.Config `mapstructure:"socious_id"`
+	GoAccounts goaccount.Config `mapstructure:"goaccounts"`
 }
 
 func Init(filename string) (*ConfigType, error) {
