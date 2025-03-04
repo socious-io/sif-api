@@ -18,7 +18,7 @@ jobs:
   test-build-dev:
     name: Test & Build for Development env
     # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ["socious-v3-dev"]
+    runs-on: ["sif-api-dev"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
