@@ -1,4 +1,5 @@
 SELECT id, COUNT(*) OVER () as total_count
 FROM projects p
+WHERE p.identity_id = $1
 ORDER BY p.created_at DESC
-LIMIT $1 OFFSET $2
+LIMIT $2 OFFSET $3

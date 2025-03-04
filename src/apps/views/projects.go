@@ -17,10 +17,9 @@ func projectsGroup(router *gin.Engine) {
 	g.Use(auth.LoginRequired())
 
 	g.GET("", paginate(), func(c *gin.Context) {
-		identity, _ := c.Get("identity")
 		page, _ := c.Get("paginate")
 
-		projects, total, err := models.GetProjects(identity.(*models.Identity).ID, page.(database.Paginate))
+		projects, total, err := models.GetProjects(page.(database.Paginate))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return

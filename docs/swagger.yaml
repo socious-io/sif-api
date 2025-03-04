@@ -5,12 +5,17 @@ info:
 servers:
   - url: http://localhost:4000
     description: Local server (for development purposes)
+  - url: https://devsif.socious.io
+    description: dev server (for development purposes)
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
 paths:
   /auth:
     post:
       summary: create auth
-      security:
-        - bearerAuth: []
       description: create auth session
       tags:
         - Auth
@@ -31,8 +36,6 @@ paths:
   /auth/session:
     post:
       summary: confirm session
-      security:
-        - bearerAuth: []
       description: create auth session
       tags:
         - Auth
@@ -50,3 +53,155 @@ paths:
           content:
             application/json:
               schema: {}
+  /projects:
+    get:
+      summary: get projects
+      security:
+        - bearerAuth: []
+      description: get projects
+      tags:
+        - Project
+      responses:
+        '200':
+          description: Successful response
+      parameters:
+        - name: filter.identity
+          in: query
+          schema:
+            type: string
+          required: false
+    post:
+      summary: create projects
+      security:
+        - bearerAuth: []
+      description: create projects
+      tags:
+        - Project
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                properties:
+                  title:
+                    type: string
+                    example: Title of the Service
+                  description:
+                    type: string
+                    example: Description of the Service
+                  status:
+                    enum:
+                      - DRAFT
+                      - EXPIRE
+                      - ACTIVE
+                  city:
+                    type: string
+                  country:
+                    type: string
+                  social_cause:
+                    type: string
+                  cover_id:
+                    type: string
+                  wallet_address:
+                    type: string
+                  wallet_env:
+                    type: string
+  /projects/:id:
+    parameters:
+      - name: id
+        required: true
+        in: path
+        description: Project ID
+        schema:
+          type: string
+    get:
+      summary: get project
+      security:
+        - bearerAuth: []
+      description: get project
+      tags:
+        - Project
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                properties:
+                  title:
+                    type: string
+                    example: Title of the Service
+                  description:
+                    type: string
+                    example: Description of the Service
+                  status:
+                    enum:
+                      - DRAFT
+                      - EXPIRE
+                      - ACTIVE
+                  city:
+                    type: string
+                  country:
+                    type: string
+                  social_cause:
+                    type: string
+                  cover_id:
+                    type: string
+                  wallet_address:
+                    type: string
+                  wallet_env:
+                    type: string
+    patch:
+      summary: update projects
+      security:
+        - bearerAuth: []
+      description: create projects
+      tags:
+        - Project
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                properties:
+                  title:
+                    type: string
+                    example: Title of the Service
+                  description:
+                    type: string
+                    example: Description of the Service
+                  status:
+                    enum:
+                      - DRAFT
+                      - EXPIRE
+                      - ACTIVE
+                  city:
+                    type: string
+                  country:
+                    type: string
+                  social_cause:
+                    type: string
+                  cover_id:
+                    type: string
+                  wallet_address:
+                    type: string
+                  wallet_env:
+                    type: string
+    delete:
+      summary: delete project
+      security:
+        - bearerAuth: []
+      description: delete project
+      tags:
+        - Project
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string

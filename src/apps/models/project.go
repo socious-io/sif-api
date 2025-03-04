@@ -54,6 +54,7 @@ func (p *Project) Create(ctx context.Context) error {
 		"projects/create",
 		p.Title,
 		p.Description,
+		p.Status,
 		p.City,
 		p.Country,
 		p.SocialCause,
@@ -83,10 +84,10 @@ func (p *Project) Update(ctx context.Context) error {
 		p.ID,
 		p.Title,
 		p.Description,
+		p.Status,
 		p.City,
 		p.Country,
 		p.SocialCause,
-		p.IdentityID,
 		p.CoverID,
 		p.WalletAddress,
 		p.WalletEnv,
@@ -113,15 +114,26 @@ func (p *Project) Delete(ctx context.Context) error {
 	return nil
 }
 
-func GetProjects(identityId uuid.UUID, p database.Paginate) ([]Project, int, error) {
+func GetProjects(p database.Paginate) ([]Project, int, error) {
 	var (
 		projects  = []Project{}
 		fetchList []database.FetchList
 		ids       []interface{}
 	)
-
-	if err := database.QuerySelect("projects/get", &fetchList, identityId, p.Limit, p.Offet); err != nil {
-		return nil, 0, err
+	if len(p.Filters) > 0 {
+		var identityId string
+		for _, filter := range p.Filters {
+			if filter.Key == "identity_id" || filter.Key == "identity" {
+				identityId = filter.Value
+			}
+		}
+		if err := database.QuerySelect("projects/get_by_identity", &fetchList, identityId, p.Limit, p.Offet); err != nil {
+			return nil, 0, err
+		}
+	} else {
+		if err := database.QuerySelect("projects/get", &fetchList, p.Limit, p.Offet); err != nil {
+			return nil, 0, err
+		}
 	}
 
 	if len(fetchList) < 1 {
