@@ -33,8 +33,8 @@ func (OauthConnect) FetchQuery() string {
 func (oc *OauthConnect) Upsert(ctx context.Context) error {
 	rows, err := database.Query(
 		ctx, "oauth_connects/upsert",
-		oc.Provider,
 		oc.IdentityId,
+		oc.Provider,
 		oc.MatrixUniqueID,
 		oc.AccessToken,
 		oc.RefreshToken,
