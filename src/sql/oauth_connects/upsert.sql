@@ -1,6 +1,6 @@
-INSERT INTO oauth_connects (identity_id, provider, matrix_unique_id, access_token, refresh_token, meta)
+INSERT INTO oauth_connects (identity_id, provider, matrix_unique_id, access_token, refresh_token, meta, expire_at)
 VALUES (
-  $1, $2, $3, $4, $5, $6    
+  $1, $2, $3, $4, $5, $6, $7
 )
 ON CONFLICT (matrix_unique_id, provider) 
 DO UPDATE SET
