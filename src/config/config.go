@@ -42,6 +42,11 @@ type ConfigType struct {
 	} `mapstructure:"payment"`
 
 	GoAccounts goaccount.Config `mapstructure:"goaccounts"`
+	Upload     struct {
+		BucketName            string `mapstructure:"bucket_name"`
+		CDNUrl                string `mapstructure:"cdn_url"`
+		GoogleCredentialsFile string `mapstructure:"google_credentials_file"`
+	} `mapstructure:"goaccounts"`
 }
 
 func Init(filename string) (*ConfigType, error) {

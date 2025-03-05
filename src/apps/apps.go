@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"sif/src/apps/utils"
 	"sif/src/apps/views"
 	"sif/src/config"
 	"time"
@@ -21,6 +22,17 @@ func Init() *gin.Engine {
 		ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
 		defer cancel()
 		c.Set("ctx", ctx)
+		c.Next()
+	})
+
+	uploader := &utils.GCSUploader{
+		CDNUrl:          config.Config.Upload.CDNUrl,
+		BucketName:      config.Config.Upload.BucketName,
+		CredentialsFile: config.Config.Upload.GoogleCredentialsFile,
+	}
+
+	router.Use(func(c *gin.Context) {
+		c.Set("uploader", uploader)
 		c.Next()
 	})
 
