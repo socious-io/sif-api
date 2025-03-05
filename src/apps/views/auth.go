@@ -60,12 +60,14 @@ func authGroup(router *gin.Engine) {
 				MatrixUniqueID: user.ID.String(),
 			}
 		}
-
-		if user, err = models.GetUserByUsername(user.Username); err != nil {
+		u, err := models.GetUserByUsername(user.Username)
+		if err != nil {
 			if err := user.Create(c.MustGet("ctx").(context.Context)); err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
+		} else {
+			user = u
 		}
 		connect.IdentityId = user.ID
 		if err := connect.Upsert(c.MustGet("ctx").(context.Context)); err != nil {
