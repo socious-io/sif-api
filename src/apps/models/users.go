@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/jmoiron/sqlx/types"
@@ -48,10 +49,20 @@ func (User) FetchQuery() string {
 }
 
 func (u *User) Create(ctx context.Context) error {
+	if u.Avatar != nil {
+		b, _ := json.Marshal(u.Avatar)
+		u.AvatarJson.Scan(b)
+	}
+	if u.Cover != nil {
+		b, _ := json.Marshal(u.Avatar)
+		u.CoverJson.Scan(b)
+	}
 	rows, err := database.Query(
 		ctx,
 		"users/register",
 		u.FirstName, u.LastName, u.Username, u.Email,
+		u.City, u.Country, u.AvatarJson, u.CoverJson,
+		u.Language, u.ImpactPoints,
 	)
 	if err != nil {
 		return err
