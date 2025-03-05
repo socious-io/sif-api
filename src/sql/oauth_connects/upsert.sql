@@ -1,4 +1,4 @@
-INSERT INTO oauth_connects (identity_id, provider, matrix_unique_id, access_token, refresh_token, meta, expire_at)
+INSERT INTO oauth_connects (identity_id, provider, matrix_unique_id, access_token, refresh_token, meta, expired_at)
 VALUES (
   $1, $2, $3, $4, $5, $6, $7
 )
