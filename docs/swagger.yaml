@@ -53,6 +53,26 @@ paths:
           content:
             application/json:
               schema: {}
+  /auth/refresh:
+    post:
+      summary: refresh jwt
+      description: refresh jwt
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                refresh_token:
+                  type: string
+                  example: jwt_refresh_token
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema: {}
   /projects:
     get:
       summary: get projects
@@ -205,3 +225,45 @@ paths:
                 properties:
                   message:
                     type: string
+  /media:
+    post:
+      summary: upload media
+      description: upload media
+      tags:
+        - Media
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema: {}
+  /media/:id:
+    parameters:
+      - name: id
+        required: true
+        in: path
+        description: Media ID
+        schema:
+          type: string
+    get:
+      summary: get media
+      security:
+        - bearerAuth: []
+      description: get media
+      tags:
+        - Media
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema: {}

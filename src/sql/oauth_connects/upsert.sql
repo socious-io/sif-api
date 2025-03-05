@@ -8,4 +8,4 @@ DO UPDATE SET
     refresh_token = EXCLUDED.refresh_token,
     meta = EXCLUDED.meta,
     expired_at = EXCLUDED.expired_at,
-    updated_at = NOW();   
+    updated_at = NOW();

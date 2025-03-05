@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func mediaGroup(router *gin.Engine) {
@@ -61,6 +62,18 @@ func mediaGroup(router *gin.Engine) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"media": media})
+		c.JSON(http.StatusCreated, media)
+	})
+
+	g.GET("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+
+		media, err := models.GetMedia(uuid.MustParse(id))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, media)
 	})
 }

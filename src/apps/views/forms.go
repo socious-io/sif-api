@@ -25,3 +25,7 @@ type AuthForm struct {
 type SessionForm struct {
 	Code string `json:"code" validate:"required"`
 }
+
+type RefreshForm struct {
+	RefreshToken string `json:"refresh_token" validate:"required"`
+}

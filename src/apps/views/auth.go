@@ -80,4 +80,22 @@ func authGroup(router *gin.Engine) {
 		c.JSON(http.StatusAccepted, jwt)
 	})
 
+	g.POST("/refresh", func(c *gin.Context) {
+		form := new(RefreshForm)
+		if err := c.Bind(form); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		claims, err := auth.VerifyToken(form.RefreshToken)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		jwt, err := auth.GenerateFullTokens(claims.ID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusAccepted, jwt)
+	})
 }
