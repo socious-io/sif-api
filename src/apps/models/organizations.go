@@ -1,6 +1,8 @@
 package models
 
 import (
+	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/jmoiron/sqlx/types"
@@ -41,6 +43,13 @@ type Organization struct {
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
 }
 
+type OrganizationMember struct {
+	ID             uuid.UUID `db:"id" json:"id"`
+	OrganizationID uuid.UUID `db:"organization_id" json:"organization_id"`
+	UserID         uuid.UUID `db:"user_id" json:"user_id"`
+	CreatedAt      time.Time `db:"created_at" json:"created_at"`
+}
+
 func (Organization) TableName() string {
 	return "organizations"
 }
@@ -49,12 +58,107 @@ func (Organization) FetchQuery() string {
 	return "organizations/fetch"
 }
 
-func (*Organization) Create() error {
-	return nil
+func (o *Organization) Create(ctx context.Context, userID uuid.UUID) error {
+
+	tx, err := database.GetDB().Beginx()
+	if err != nil {
+		return err
+	}
+
+	if o.Cover != nil {
+		b, _ := json.Marshal(o.Cover)
+		o.CoverJson.Scan(b)
+	}
+
+	if o.Logo != nil {
+		b, _ := json.Marshal(o.Logo)
+		o.LogoJson.Scan(b)
+	}
+
+	rows, err := database.TxQuery(
+		ctx,
+		tx,
+		"organizations/create",
+		o.Shortname,
+		o.Name,
+		o.Bio,
+		o.Description,
+		o.Email,
+		o.Phone,
+		o.City,
+		o.Country,
+		o.Address,
+		o.Website,
+		o.Mission,
+		o.Culture,
+		o.LogoJson,
+		o.CoverJson,
+		o.Status,
+		o.VerifiedImpact,
+		o.Verified,
+	)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	for rows.Next() {
+		if err := rows.StructScan(o); err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	rows.Close()
+	if _, err := database.TxQuery(
+		ctx,
+		tx,
+		"organizations/add_member",
+		o.ID,
+		userID,
+	); err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+	return database.Fetch(o, o.ID)
 }
 
-func (*Organization) Update() error {
-	return nil
+func (o *Organization) Update(ctx context.Context) error {
+	rows, err := database.Query(
+		ctx,
+		"organizations/update",
+		o.ID,
+		o.Shortname,
+		o.Name,
+		o.Bio,
+		o.Description,
+		o.Email,
+		o.Phone,
+		o.City,
+		o.Country,
+		o.Address,
+		o.Website,
+		o.Mission,
+		o.Culture,
+		o.LogoJson,
+		o.CoverJson,
+		o.Status,
+		o.VerifiedImpact,
+		o.Verified,
+	)
+	if err != nil {
+		return err
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		if err := rows.StructScan(o); err != nil {
+			return err
+		}
+	}
+	return database.Fetch(o, o.ID)
 }
 
 func (*Organization) Remove() error {
@@ -77,17 +181,20 @@ func GetOrganization(id uuid.UUID, identity uuid.UUID) (*Organization, error) {
 	return o, nil
 }
 
-func getManyOrganizations(ids []uuid.UUID, identity uuid.UUID) ([]Organization, error) {
-	result := []Organization{}
-	return result, nil
-}
-
 func GetOrganizationByShortname(shortname string, identity uuid.UUID) (*Organization, error) {
 	o := new(Organization)
 	if err := database.Fetch(o, identity.String()); err != nil {
 		return nil, err
 	}
 	return o, nil
+}
+
+func Member(orgID, userID uuid.UUID) (*OrganizationMember, error) {
+	om := new(OrganizationMember)
+	if err := database.Get(om, "organizations/get_member", orgID, userID); err != nil {
+		return nil, err
+	}
+	return om, nil
 }
 
 func GetUserOrganizations(userId uuid.UUID) ([]Organization, error) {

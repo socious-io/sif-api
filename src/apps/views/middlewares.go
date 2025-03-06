@@ -45,6 +45,5 @@ func paginate() gin.HandlerFunc {
 		c.Set("limit", limit)
 		c.Set("page", page)
 		c.Next()
-
 	}
 }

@@ -17,9 +17,9 @@ func projectsGroup(router *gin.Engine) {
 	g.Use(auth.LoginRequired())
 
 	g.GET("", paginate(), func(c *gin.Context) {
-		page, _ := c.Get("paginate")
+		pagination := c.MustGet("paginate").(database.Paginate)
 
-		projects, total, err := models.GetProjects(page.(database.Paginate))
+		projects, total, err := models.GetProjects(pagination)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -27,6 +27,8 @@ func projectsGroup(router *gin.Engine) {
 		c.JSON(http.StatusOK, gin.H{
 			"results": projects,
 			"total":   total,
+			"page":    c.MustGet("page"),
+			"limit":   c.MustGet("limit"),
 		})
 	})
 

@@ -1,0 +1,1 @@
+SELECT * from organizations_members WHERE organization_id=$1 AND user_id=$2
