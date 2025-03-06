@@ -16,6 +16,7 @@ type ProjectForm struct {
 	CoverID       *uuid.UUID            `json:"cover_id"`
 	WalletAddress string                `json:"wallet_address" validate:"required"`
 	WalletEnv     string                `json:"wallet_env"`
+	Website       string                `json:"website"`
 }
 
 type AuthForm struct {

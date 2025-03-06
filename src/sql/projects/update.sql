@@ -7,6 +7,7 @@ UPDATE projects p SET
     social_cause=$7,
     cover_id=$8,
     wallet_address=$9,
-    wallet_env=$10
+    wallet_env=$10,
+    website=$11
 WHERE id=$1
 RETURNING *

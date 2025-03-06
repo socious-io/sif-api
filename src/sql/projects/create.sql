@@ -8,12 +8,13 @@ INSERT INTO projects (
     identity_id,
     cover_id,
     wallet_address,
-    wallet_env
+    wallet_env,
+    website
 )
 VALUES (
     $1, $2, $3, 
     $4, $5, $6,
-    $7, $8,
-    $9, $10
+    $7, $8, $9,
+    $10, $11
 )
 RETURNING *

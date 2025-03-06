@@ -127,6 +127,8 @@ paths:
                     type: string
                   wallet_env:
                     type: string
+                  website:
+                    type: string
   /projects/:id:
     parameters:
       - name: id
@@ -172,6 +174,8 @@ paths:
                     type: string
                   wallet_env:
                     type: string
+                  website:
+                    type: string
     patch:
       summary: update projects
       security:
@@ -208,6 +212,8 @@ paths:
                   wallet_address:
                     type: string
                   wallet_env:
+                    type: string
+                  website:
                     type: string
     delete:
       summary: delete project

@@ -20,6 +20,7 @@ type Project struct {
 
 	City    *string `db:"city" json:"city"`
 	Country *string `db:"country" json:"country"`
+	Website *string `db:"website" json:"website"`
 
 	SocialCause string `db:"social_cause" json:"social_cause"`
 
@@ -62,6 +63,7 @@ func (p *Project) Create(ctx context.Context) error {
 		p.CoverID,
 		p.WalletAddress,
 		p.WalletEnv,
+		p.Website,
 	)
 	if err != nil {
 		return err
@@ -91,6 +93,7 @@ func (p *Project) Update(ctx context.Context) error {
 		p.CoverID,
 		p.WalletAddress,
 		p.WalletEnv,
+		p.Website,
 	)
 
 	if err != nil {
