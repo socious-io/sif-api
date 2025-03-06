@@ -267,3 +267,31 @@ paths:
           content:
             application/json:
               schema: {}
+  /users/profile:
+    get:
+      summary: get current user profile
+      security:
+        - bearerAuth: []
+      description: get user profile
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema: {}
+  /identities:
+    get:
+      summary: get current user identities
+      security:
+        - bearerAuth: []
+      description: get current user identities
+      tags:
+        - Identities
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema: {}

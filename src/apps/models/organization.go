@@ -89,3 +89,28 @@ func GetOrganizationByShortname(shortname string, identity uuid.UUID) (*Organiza
 	}
 	return o, nil
 }
+
+func GetUserOrganizations(userId uuid.UUID) ([]Organization, error) {
+	var (
+		orgs      = []Organization{}
+		fetchList = []database.FetchList{}
+		ids       []interface{}
+	)
+
+	if err := database.QuerySelect("organizations/get_by_member", fetchList, userId); err != nil {
+		return orgs, err
+	}
+
+	if len(fetchList) < 1 {
+		return orgs, nil
+	}
+
+	for _, f := range fetchList {
+		ids = append(ids, f.ID)
+	}
+
+	if err := database.Fetch(&orgs, ids...); err != nil {
+		return orgs, err
+	}
+	return orgs, nil
+}

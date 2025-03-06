@@ -1,6 +1,7 @@
 package tests_test
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -9,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"sif/src/apps"
+	"sif/src/apps/auth"
 	"sif/src/config"
 	"strings"
 	"testing"
@@ -36,6 +38,15 @@ var (
 // Setup the test environment before any tests run
 var _ = BeforeSuite(func() {
 	db, router = setupTestEnvironment()
+	ctx := context.Background()
+	for _, u := range users {
+		err := u.Create(ctx)
+		if err != nil {
+			continue
+		}
+		token, _ := auth.GenerateToken(u.ID.String(), false)
+		usersAuths = append(usersAuths, token)
+	}
 })
 
 // Drop the database after all tests have run
@@ -51,6 +62,8 @@ func TestSuite(t *testing.T) {
 
 var _ = Describe("Socious Test Suite", Ordered, func() {
 	Context("Auth", authGroup)
+	Context("Projects", projectsGroup)
+	Context("Identities", identitiesGroup)
 })
 
 func init() {

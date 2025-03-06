@@ -13,7 +13,9 @@ type Identity struct {
 	Type      IdentityType           `db:"type" json:"type"`
 	MetaMap   map[string]interface{} `db:"-" json:"meta"`
 	Meta      types.JSONText         `db:"meta" json:"-"`
+	Current   bool                   `db:"-" json:"current"`
 	CreatedAt time.Time              `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time              `db:"updated_at" json:"updated_at"`
 }
 
 func (Identity) TableName() string {
@@ -30,4 +32,12 @@ func GetIdentity(id uuid.UUID) (*Identity, error) {
 		return nil, err
 	}
 	return i, nil
+}
+
+func GetIdentities(ids []interface{}) ([]Identity, error) {
+	var identities []Identity
+	if err := database.Fetch(&identities, ids...); err != nil {
+		return nil, err
+	}
+	return identities, nil
 }
