@@ -32,6 +32,7 @@ jobs:
         run: |
           cp /etc/sif/config.yml .
           cp /etc/sif/test.config.yml .
+          cp /etc/sif/gcs-service-account.json .
 
       - name: Downloading dependencies
         run: |
