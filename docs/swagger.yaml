@@ -247,6 +247,8 @@ paths:
     post:
       summary: upload media
       description: upload media
+      security:
+        - bearerAuth: []
       tags:
         - Media
       requestBody:
