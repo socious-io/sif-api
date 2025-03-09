@@ -44,7 +44,7 @@ func mediaGroup(router *gin.Engine) {
 
 		src.Seek(0, io.SeekStart)
 
-		fileName := fmt.Sprintf("%s.%s", checksum, filepath.Ext(file.Filename))
+		fileName := fmt.Sprintf("%s%s", checksum, filepath.Ext(file.Filename))
 		fileURL, err := c.MustGet("uploader").(*utils.GCSUploader).UploadFile(ctx, fileName, file.Header.Get("Content-Type"), src)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

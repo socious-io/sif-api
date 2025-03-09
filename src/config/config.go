@@ -21,13 +21,6 @@ type ConfigType struct {
 		SqlDir     string `mapstructure:"sqldir"`
 		Migrations string `mapstructure:"migrations"`
 	} `mapstructure:"database"`
-	S3 struct {
-		AccessKeyId     string `mapstructure:"access_key_id"`
-		SecretAccessKey string `mapstructure:"secret_access_key"`
-		DefaultRegion   string `mapstructure:"default_region"`
-		Bucket          string `mapstructure:"bucket"`
-		CDNUrl          string `mapstructure:"cdn_url"`
-	} `mapstructure:"s3"`
 	Cors struct {
 		Origins []string `mapstructure:"origins"`
 	} `mapstructure:"cors"`
@@ -43,13 +36,15 @@ type ConfigType struct {
 
 	GoAccounts goaccount.Config `mapstructure:"goaccounts"`
 	Upload     struct {
-		BucketName            string `mapstructure:"bucket_name"`
-		CDNUrl                string `mapstructure:"cdn_url"`
-		GoogleCredentialsFile string `mapstructure:"google_credentials_file"`
+		Bucket      string `mapstructure:"bucket"`
+		CDN         string `mapstructure:"cdn"`
+		Credentials string `mapstructure:"credentials"`
 	} `mapstructure:"upload"`
+
 	Admin struct {
 		AccessToken string `mapstructure:"access_token"`
 	} `mapstructure:"admin"`
+
 	Discord struct {
 		SifKybChannel string `mapstructure:"kyb_channel"`
 	} `mapstructure:"discord"`

@@ -24,11 +24,10 @@ func Init() *gin.Engine {
 		c.Set("ctx", ctx)
 		c.Next()
 	})
-
 	uploader := &utils.GCSUploader{
-		CDNUrl:          config.Config.Upload.CDNUrl,
-		BucketName:      config.Config.Upload.BucketName,
-		CredentialsFile: config.Config.Upload.GoogleCredentialsFile,
+		CDNUrl:          config.Config.Upload.CDN,
+		BucketName:      config.Config.Upload.Bucket,
+		CredentialsFile: config.Config.Upload.Credentials,
 	}
 
 	router.Use(func(c *gin.Context) {
