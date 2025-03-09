@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
+	"sif/src/apps/auth"
 	"sif/src/apps/models"
 	"sif/src/apps/utils"
 	"time"
@@ -16,6 +17,7 @@ import (
 
 func mediaGroup(router *gin.Engine) {
 	g := router.Group("media")
+	g.Use(auth.LoginRequired())
 
 	g.POST("", func(c *gin.Context) {
 		file, err := c.FormFile("file")
