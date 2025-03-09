@@ -46,12 +46,12 @@ type ConfigType struct {
 		BucketName            string `mapstructure:"bucket_name"`
 		CDNUrl                string `mapstructure:"cdn_url"`
 		GoogleCredentialsFile string `mapstructure:"google_credentials_file"`
-	} `mapstructure:"goaccounts"`
+	} `mapstructure:"upload"`
 	Admin struct {
 		AccessToken string `mapstructure:"access_token"`
 	} `mapstructure:"admin"`
 	Discord struct {
-		SifKybChannel string `mapstructure:"sif_kyb_channel"`
+		SifKybChannel string `mapstructure:"kyb_channel"`
 	} `mapstructure:"discord"`
 }
 
