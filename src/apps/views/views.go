@@ -8,4 +8,5 @@ func Init(r *gin.Engine) {
 	identitiesGroup(r)
 	usersGroup(r)
 	mediaGroup(r)
+	kybVerificationGroup(r)
 }

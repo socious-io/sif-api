@@ -30,3 +30,11 @@ type SessionForm struct {
 type RefreshForm struct {
 	RefreshToken string `json:"refresh_token" validate:"required"`
 }
+
+type KYBVerificationForm struct {
+	Documents []string `json:"documents"`
+}
+
+type ApikeyForm struct {
+	Name string `json:"name"`
+}

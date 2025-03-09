@@ -47,6 +47,12 @@ type ConfigType struct {
 		CDNUrl                string `mapstructure:"cdn_url"`
 		GoogleCredentialsFile string `mapstructure:"google_credentials_file"`
 	} `mapstructure:"goaccounts"`
+	Admin struct {
+		AccessToken string `mapstructure:"access_token"`
+	} `mapstructure:"admin"`
+	Discord struct {
+		SifKybChannel string `mapstructure:"sif_kyb_channel"`
+	} `mapstructure:"discord"`
 }
 
 func Init(filename string) (*ConfigType, error) {

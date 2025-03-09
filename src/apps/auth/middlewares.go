@@ -56,6 +56,14 @@ func LoginRequired() gin.HandlerFunc {
 			identity, _ = models.GetIdentity(u.ID)
 		}
 
+		if identity.Type == models.IdentityTypeOrganizations {
+			if _, err := models.Member(identity.ID, u.ID); err != nil {
+				c.JSON(http.StatusForbidden, gin.H{"error": "Identitiy not allowed"})
+				c.Abort()
+				return
+			}
+		}
+
 		c.Set("identity", identity)
 
 		c.Next()

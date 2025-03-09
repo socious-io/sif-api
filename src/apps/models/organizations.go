@@ -173,7 +173,7 @@ func (*Organization) ToggleHiring() error {
 	return nil
 }
 
-func GetOrganization(id uuid.UUID, identity uuid.UUID) (*Organization, error) {
+func GetOrganization(id uuid.UUID) (*Organization, error) {
 	o := new(Organization)
 	if err := database.Fetch(o, id.String()); err != nil {
 		return nil, err

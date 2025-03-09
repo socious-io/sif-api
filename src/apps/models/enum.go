@@ -6,10 +6,11 @@ import (
 )
 
 type (
-	IdentityType            string
-	OauthConnectedProviders string
-	WalletENV               string
-	ProjectStatus           string
+	IdentityType              string
+	OauthConnectedProviders   string
+	WalletENV                 string
+	ProjectStatus             string
+	KybVerificationStatusType string
 )
 
 const (
@@ -23,6 +24,10 @@ const (
 	ProjectStatusDraft  ProjectStatus = "DRAFT"
 	ProjectStatusExpire ProjectStatus = "EXPIRE"
 	ProjectStatusActive ProjectStatus = "ACTIVE"
+
+	KYBStatusPending  KybVerificationStatusType = "PENDING"
+	KYBStatusApproved KybVerificationStatusType = "APPROVED"
+	KYBStatusRejected KybVerificationStatusType = "REJECTED"
 )
 
 // ------------------------------------------------------
@@ -66,6 +71,24 @@ func (ps ProjectStatus) Value() (driver.Value, error) {
 }
 
 // ------------------------------------------------------
+
+func (o *KybVerificationStatusType) Scan(value interface{}) error {
+	switch v := value.(type) {
+	case []byte:
+		*o = KybVerificationStatusType(string(v))
+	case string:
+		*o = KybVerificationStatusType(v)
+	default:
+		return fmt.Errorf("failed to scan operator type: %v", value)
+	}
+	return nil
+}
+
+func (o KybVerificationStatusType) Value() (driver.Value, error) {
+	return string(o), nil
+}
+
+// ----------------------------------------------------------
 
 // scanEnum is a helper function that converts an interface{} value to a string
 // to support database scanning. It handles both byte slices and string values.

@@ -1,6 +1,9 @@
 package views
 
 import (
+	"net/http"
+	"sif/src/apps/models"
+	"sif/src/config"
 	"strconv"
 	"strings"
 
@@ -44,6 +47,35 @@ func paginate() gin.HandlerFunc {
 		})
 		c.Set("limit", limit)
 		c.Set("page", page)
+		c.Next()
+	}
+}
+
+// Administration
+func adminAccessRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		access_token := c.Query("admin_access_token")
+		isAdmin := access_token == config.Config.Admin.AccessToken
+
+		if !isAdmin {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Admin access required"})
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
+}
+
+func OrganizationRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		identity := c.MustGet("identity").(*models.Identity)
+		if identity.Type != models.IdentityTypeOrganizations {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Organization identity required"})
+			c.Abort()
+			return
+		}
 		c.Next()
 	}
 }

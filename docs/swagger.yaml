@@ -313,3 +313,43 @@ paths:
           content:
             application/json:
               schema: {}
+
+  /kybs:
+    post:
+        summary: new kyb
+        security:
+          - bearerAuth: []
+        description:  new kyb for current organization
+        tags:
+          - KYB
+        parameters:
+          - name: Current-Identity
+            in: header
+            schema:
+              type: string
+            example: ebd02a72-f530-4d18-9a72-d7aa9ace1271
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json:
+                schema: {}
+    get:
+      summary: get kyb
+      security:
+        - bearerAuth: []
+      description: get current organization kyb
+      tags:
+        - KYB
+      parameters:
+        - name: Current-Identity
+          in: header
+          schema:
+            type: string
+          example: ebd02a72-f530-4d18-9a72-d7aa9ace1271
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema: {}
