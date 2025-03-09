@@ -45,9 +45,9 @@ func (u *GCSUploader) UploadFile(ctx context.Context, fileName, contentType stri
 	}
 
 	// Make the file publicly accessible (optional)
-	if err := obj.ACL().Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+	/* if err := obj.ACL().Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
 		return "", err
-	}
+	} */
 
 	fileURL := fmt.Sprintf("%s/%s/%s", u.CDNUrl, u.BucketName, fileName)
 	return fileURL, nil
