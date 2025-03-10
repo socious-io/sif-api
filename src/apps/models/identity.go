@@ -9,13 +9,12 @@ import (
 )
 
 type Identity struct {
-	ID        uuid.UUID              `db:"id" json:"id"`
-	Type      IdentityType           `db:"type" json:"type"`
-	MetaMap   map[string]interface{} `db:"-" json:"meta"`
-	Meta      types.JSONText         `db:"meta" json:"-"`
-	Current   bool                   `db:"-" json:"current"`
-	CreatedAt time.Time              `db:"created_at" json:"created_at"`
-	UpdatedAt time.Time              `db:"updated_at" json:"updated_at"`
+	ID        uuid.UUID      `db:"id" json:"id"`
+	Type      IdentityType   `db:"type" json:"type"`
+	Meta      types.JSONText `db:"meta" json:"meta"`
+	Current   bool           `db:"-" json:"current"`
+	CreatedAt time.Time      `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time      `db:"updated_at" json:"updated_at"`
 }
 
 func (Identity) TableName() string {

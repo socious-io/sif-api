@@ -335,7 +335,13 @@ paths:
             description: Successful response
             content:
               application/json:
-                schema: {}
+                schema:
+                  properties:
+                    documents:
+                      type: array
+                      items:
+                        type: string
+                      example: ["http://media_url_1", "http://media_url_2", "http://media_url_3"]
     get:
       summary: get kyb
       security:
@@ -354,4 +360,25 @@ paths:
           description: Successful response
           content:
             application/json:
-              schema: {}
+              schema:
+                properties:
+                  id:
+                    type: string
+                  user_id:
+                    type: string
+                  organization_id:
+                    type: string
+                  status:
+                    type: string
+                    enum:
+                      - PENDING
+                      - APPROVED
+                      - REJECTED
+                  documents:
+                    type: array
+                    items:
+                      type: string
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
