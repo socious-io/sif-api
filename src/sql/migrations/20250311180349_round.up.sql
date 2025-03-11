@@ -25,8 +25,23 @@ VALUES (
     '2025-02-01 00:00:00'    
 );
 
-
 ALTER TABLE projects
-ADD COLUMN round_id UUID REFERENCES rounds(id) ON DELETE SET NULL DEFAULT (
-    SELECT id FROM rounds ORDER BY created_at DESC LIMIT 1
-);
+ADD COLUMN round_id UUID REFERENCES rounds(id) ON DELETE SET NULL;
+
+
+CREATE OR REPLACE FUNCTION set_latest_round()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.round_id = (
+        SELECT id
+        FROM rounds
+        ORDER BY created_at DESC
+        LIMIT 1
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_set_latest_round
+BEFORE INSERT ON projects
+FOR EACH ROW EXECUTE FUNCTION set_latest_round();
