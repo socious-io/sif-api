@@ -1,11 +1,11 @@
 INSERT INTO organizations (
     id, shortname, name, bio, description, email, phone,
     city, country, address, website, mission, culture,
-    logo, cover, status, verified_impact, verified
+    status, verified_impact, verified, cover, logo
 ) VALUES (
     $1, $2, $3, $4, $5, $6, 
     $7, $8, $9, $10, $11, $12, 
-    $13, $14, COALESCE($15, 'ACTIVE'), $16, $17, $18
+    $13, COALESCE($14, 'ACTIVE'), $15, $16, $17, $18
 )
 ON CONFLICT (id)
 DO UPDATE SET
@@ -21,9 +21,9 @@ DO UPDATE SET
     website = EXCLUDED.website,
     mission = EXCLUDED.mission,
     culture = EXCLUDED.culture,
-    logo = EXCLUDED.logo,
-    cover = EXCLUDED.cover,
     status = EXCLUDED.status,
     verified_impact = EXCLUDED.verified_impact,
-    verified = EXCLUDED.verified
+    verified = EXCLUDED.verified,
+    cover=EXCLUDED.cover,
+    logo=EXCLUDED.logo
 RETURNING id;

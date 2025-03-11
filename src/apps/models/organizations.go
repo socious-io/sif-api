@@ -70,16 +70,14 @@ func (o *Organization) Create(ctx context.Context, userID uuid.UUID) error {
 		return err
 	}
 
-	if o.Cover != nil {
-		b, _ := json.Marshal(o.Cover)
-		o.CoverJson.Scan(b)
-	}
-
 	if o.Logo != nil {
 		b, _ := json.Marshal(o.Logo)
 		o.LogoJson.Scan(b)
 	}
-
+	if o.Cover != nil {
+		b, _ := json.Marshal(o.Cover)
+		o.CoverJson.Scan(b)
+	}
 	if o.ID == uuid.Nil {
 		newID, err := uuid.NewUUID()
 		if err != nil {
@@ -105,11 +103,11 @@ func (o *Organization) Create(ctx context.Context, userID uuid.UUID) error {
 		o.Website,
 		o.Mission,
 		o.Culture,
-		o.LogoJson,
-		o.CoverJson,
 		o.Status,
 		o.VerifiedImpact,
 		o.Verified,
+		o.LogoJson,
+		o.CoverJson,
 	)
 	if err != nil {
 		tx.Rollback()
@@ -156,8 +154,8 @@ func (o *Organization) Update(ctx context.Context) error {
 		o.Website,
 		o.Mission,
 		o.Culture,
-		o.LogoJson,
-		o.CoverJson,
+		o.Logo,
+		o.Cover,
 		o.Status,
 		o.VerifiedImpact,
 		o.Verified,
@@ -222,11 +220,11 @@ func Member(orgID, userID uuid.UUID) (*OrganizationMember, error) {
 func GetUserOrganizations(userId uuid.UUID) ([]Organization, error) {
 	var (
 		orgs      = []Organization{}
-		fetchList = []database.FetchList{}
+		fetchList []database.FetchList
 		ids       []interface{}
 	)
 
-	if err := database.QuerySelect("organizations/get_by_member", fetchList, userId); err != nil {
+	if err := database.QuerySelect("organizations/get_by_member", &fetchList, userId); err != nil {
 		return orgs, err
 	}
 

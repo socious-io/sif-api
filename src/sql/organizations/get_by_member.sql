@@ -1,1 +1,1 @@
-SELECT om.organization_id FROM organizations_members om WHERE user_id=$1
+SELECT om.organization_id AS id FROM organizations_members om WHERE user_id=$1

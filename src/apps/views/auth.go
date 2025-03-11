@@ -2,6 +2,7 @@ package views
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"sif/src/apps/auth"
 	"sif/src/apps/models"
@@ -71,9 +72,12 @@ func authGroup(router *gin.Engine) {
 		}
 
 		var orgs = []models.Organization{}
-		token.GetMyOrganizations(orgs)
+		token.GetMyOrganizations(&orgs)
+
 		for _, o := range orgs {
-			o.UpsertAndMember(user.ID)
+			if err := o.UpsertAndMember(user.ID); err != nil {
+				log.Println(err.Error(), o)
+			}
 		}
 
 		connect.IdentityId = user.ID

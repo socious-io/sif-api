@@ -54,7 +54,7 @@ func (u *User) Create(ctx context.Context) error {
 		u.AvatarJson.Scan(b)
 	}
 	if u.Cover != nil {
-		b, _ := json.Marshal(u.Avatar)
+		b, _ := json.Marshal(u.Cover)
 		u.CoverJson.Scan(b)
 	}
 	rows, err := database.Query(
