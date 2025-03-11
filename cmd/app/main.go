@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"sif/src/apps"
 	"sif/src/config"
@@ -30,7 +29,7 @@ func main() {
 	}); err != nil {
 		log.Fatalf("gopay error %v", err)
 	}
-	fmt.Println(config.Config.GoAccounts, "----------------")
+
 	if err := goaccount.Setup(config.Config.GoAccounts); err != nil {
 		log.Fatalf("goaccount error %v", err)
 	}

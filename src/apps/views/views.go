@@ -9,4 +9,5 @@ func Init(r *gin.Engine) {
 	usersGroup(r)
 	mediaGroup(r)
 	kybVerificationGroup(r)
+	roundsGroup(r)
 }

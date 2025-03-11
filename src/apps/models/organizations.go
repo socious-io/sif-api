@@ -58,6 +58,11 @@ func (Organization) FetchQuery() string {
 	return "organizations/fetch"
 }
 
+func (om *OrganizationMember) Create(ctx context.Context) error {
+	_, err := database.Query(ctx, "organizations/create_member", om.OrganizationID, om.UserID)
+	return err
+}
+
 func (o *Organization) Create(ctx context.Context, userID uuid.UUID) error {
 
 	tx, err := database.GetDB().Beginx()
@@ -75,10 +80,19 @@ func (o *Organization) Create(ctx context.Context, userID uuid.UUID) error {
 		o.LogoJson.Scan(b)
 	}
 
+	if o.ID == uuid.Nil {
+		newID, err := uuid.NewUUID()
+		if err != nil {
+			return err
+		}
+		o.ID = newID
+	}
+
 	rows, err := database.TxQuery(
 		ctx,
 		tx,
 		"organizations/create",
+		o.ID,
 		o.Shortname,
 		o.Name,
 		o.Bio,
@@ -181,12 +195,20 @@ func GetOrganization(id uuid.UUID) (*Organization, error) {
 	return o, nil
 }
 
-func GetOrganizationByShortname(shortname string, identity uuid.UUID) (*Organization, error) {
-	o := new(Organization)
-	if err := database.Fetch(o, identity.String()); err != nil {
-		return nil, err
+func (o *Organization) UpsertAndMember(userID uuid.UUID) error {
+	if err := o.Create(context.Background(), userID); err != nil {
+		return err
 	}
-	return o, nil
+	if _, err := Member(o.ID, userID); err != nil {
+		om := &OrganizationMember{
+			OrganizationID: o.ID,
+			UserID:         userID,
+		}
+		if err := om.Create(context.Background()); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func Member(orgID, userID uuid.UUID) (*OrganizationMember, error) {

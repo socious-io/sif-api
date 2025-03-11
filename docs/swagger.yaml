@@ -382,3 +382,34 @@ paths:
                     type: string
                   updated_at:
                     type: string
+  /rounds:
+    get:
+      summary: get latest round
+      security:
+        - bearerAuth: []
+      description: get latest round
+      tags:
+        - Rounds
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  cover_id:
+                    type: string
+                  pool_amount:
+                    type: integer
+                  voting_start_at:
+                    type: string
+                  voting_end_at:
+                    type: string
+                  submission_start_at:
+                    type: string
+                  submission_end_at:
+                    type: string

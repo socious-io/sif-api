@@ -32,6 +32,10 @@ type Project struct {
 	Cover     *Media         `db:"-" json:"cover"`
 	CoverJson types.JSONText `db:"cover" json:"-"`
 
+	RoundID   uuid.UUID      `db:"round_id" json:"-"`
+	Round     Round          `db:"-" json:"round"`
+	RoundJson types.JSONText `db:"round" json:"-"`
+
 	WalletAddress string    `db:"wallet_address" json:"wallet_address"`
 	WalletEnv     WalletENV `db:"wallet_env" json:"wallet_env"`
 

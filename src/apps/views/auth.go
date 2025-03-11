@@ -69,6 +69,13 @@ func authGroup(router *gin.Engine) {
 		} else {
 			user = u
 		}
+
+		var orgs = []models.Organization{}
+		token.GetMyOrganizations(orgs)
+		for _, o := range orgs {
+			o.UpsertAndMember(user.ID)
+		}
+
 		connect.IdentityId = user.ID
 		if err := connect.Upsert(c.MustGet("ctx").(context.Context)); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
