@@ -1,0 +1,1 @@
+SELECT * FROM votes WHERE id IN (?)

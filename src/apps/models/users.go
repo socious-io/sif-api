@@ -35,9 +35,10 @@ type User struct {
 	Donates           float32 `db:"donates" json:"donates"`
 	ProjectsSupported int     `db:"project_supported" json:"project_supported"`
 
-	CreatedAt time.Time  `db:"created_at" json:"created_at"`
-	UpdatedAt time.Time  `db:"updated_at" json:"updated_at"`
-	DeletedAt *time.Time `db:"deleted_at" json:"deleted_at"`
+	IdentityVerifiedAt *time.Time `db:"identity_verified_at" json:"identity_verified_at"`
+	CreatedAt          time.Time  `db:"created_at" json:"created_at"`
+	UpdatedAt          time.Time  `db:"updated_at" json:"updated_at"`
+	DeletedAt          *time.Time `db:"deleted_at" json:"deleted_at"`
 }
 
 func (User) TableName() string {
@@ -48,7 +49,10 @@ func (User) FetchQuery() string {
 	return "users/fetch"
 }
 
-func (u *User) Create(ctx context.Context) error {
+func (u *User) Upsert(ctx context.Context) error {
+	if u.ID == uuid.Nil {
+		u.ID = uuid.New()
+	}
 	if u.Avatar != nil {
 		b, _ := json.Marshal(u.Avatar)
 		u.AvatarJson.Scan(b)
@@ -59,30 +63,11 @@ func (u *User) Create(ctx context.Context) error {
 	}
 	rows, err := database.Query(
 		ctx,
-		"users/register",
+		"users/upsert",
+		u.ID,
 		u.FirstName, u.LastName, u.Username, u.Email,
 		u.City, u.Country, u.AvatarJson, u.CoverJson,
-		u.Language, u.ImpactPoints,
-	)
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		if err := rows.StructScan(u); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (u *User) UpdateProfile(ctx context.Context) error {
-	rows, err := database.Query(
-		ctx,
-		"users/update_profile",
-		u.ID, u.FirstName, u.LastName, u.Username,
-		u.City, u.Country, u.Address,
-		u.Language,
+		u.Language, u.ImpactPoints, u.IdentityVerifiedAt,
 	)
 	if err != nil {
 		return err

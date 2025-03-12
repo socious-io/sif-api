@@ -24,8 +24,8 @@ type Project struct {
 
 	SocialCause string `db:"social_cause" json:"social_cause"`
 
-	IdentityID   *uuid.UUID     `db:"identity_id" json:"-"`
-	Identity     *Identity      `db:"-" json:"identity"`
+	IdentityID   uuid.UUID      `db:"identity_id" json:"-"`
+	Identity     Identity       `db:"-" json:"identity"`
 	IdentityJson types.JSONText `db:"identity" json:"-"`
 
 	CoverID   *uuid.UUID     `db:"cover_id" json:"-"`
@@ -38,6 +38,8 @@ type Project struct {
 
 	WalletAddress string    `db:"wallet_address" json:"wallet_address"`
 	WalletEnv     WalletENV `db:"wallet_env" json:"wallet_env"`
+
+	UserVoted bool `db:"-" json:"user_voted"`
 
 	CreatedAt time.Time  `db:"created_at" json:"created_at"`
 	UpdatedAt time.Time  `db:"updated_at" json:"updated_at"`
@@ -154,13 +156,18 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 	if err := database.Fetch(&projects, ids...); err != nil {
 		return nil, 0, err
 	}
+
 	return projects, fetchList[0].TotalCount, nil
 }
 
-func GetProject(id uuid.UUID) (*Project, error) {
+func GetProject(id, userID uuid.UUID) (*Project, error) {
 	p := new(Project)
 	if err := database.Fetch(p, id); err != nil {
 		return nil, err
 	}
+	if vote, err := GetVoteByUserAndProject(userID, id); err == nil && vote != nil {
+		p.UserVoted = true
+	}
+
 	return p, nil
 }

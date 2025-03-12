@@ -34,13 +34,21 @@ func (Round) TableName() string {
 	return "rounds"
 }
 
-func (Round) Fetch() string {
+func (Round) FetchQuery() string {
 	return "rounds/fetch"
 }
 
 func GetRoundLatestRound() (*Round, error) {
 	r := new(Round)
 	if err := database.Get(r, "rounds/get_latest_round"); err != nil {
+		return nil, err
+	}
+	return r, nil
+}
+
+func GetRound(id uuid.UUID) (*Round, error) {
+	r := new(Round)
+	if err := database.Fetch(r, id); err != nil {
 		return nil, err
 	}
 	return r, nil

@@ -39,8 +39,10 @@ var (
 var _ = BeforeSuite(func() {
 	db, router = setupTestEnvironment()
 	ctx := context.Background()
+	now := time.Now()
 	for _, u := range users {
-		err := u.Create(ctx)
+		u.IdentityVerifiedAt = &now
+		err := u.Upsert(ctx)
 		if err != nil {
 			continue
 		}

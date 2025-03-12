@@ -46,6 +46,7 @@ func authGroup(router *gin.Engine) {
 		var (
 			connect *models.OauthConnect
 			user    = new(models.User)
+			ctx     = c.MustGet("ctx").(context.Context)
 		)
 
 		if err := token.GetUserProfile(user); err != nil {
@@ -59,29 +60,25 @@ func authGroup(router *gin.Engine) {
 				AccessToken:    token.AccessToken,
 				RefreshToken:   &token.RefreshToken,
 				MatrixUniqueID: user.ID.String(),
+				IdentityId:     user.ID,
 			}
 		}
-		u, err := models.GetUserByUsername(user.Username)
-		if err != nil {
-			if err := user.Create(c.MustGet("ctx").(context.Context)); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-				return
-			}
-		} else {
-			user = u
+
+		if err := user.Upsert(ctx); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
 		}
 
 		var orgs = []models.Organization{}
 		token.GetMyOrganizations(&orgs)
 
 		for _, o := range orgs {
-			if err := o.UpsertAndMember(user.ID); err != nil {
+			if err := o.UpsertAndMember(ctx, user.ID); err != nil {
 				log.Println(err.Error(), o)
 			}
 		}
 
-		connect.IdentityId = user.ID
-		if err := connect.Upsert(c.MustGet("ctx").(context.Context)); err != nil {
+		if err := connect.Upsert(ctx); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}

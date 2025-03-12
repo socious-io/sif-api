@@ -242,6 +242,29 @@ paths:
               schema:
                 properties:
                   message:
+                    type: string  
+  /projects/:id/votes:
+    post:
+      summary: vote for project
+      description: vote for project
+      security:
+        - bearerAuth: []
+      tags:
+        - Votes
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
                     type: string
   /media:
     post:
@@ -413,3 +436,92 @@ paths:
                     type: string
                   submission_end_at:
                     type: string
+  
+  /organizations:
+    get:
+      summary: get organizations
+      security:
+        - bearerAuth: []
+      description: get organizations
+      tags:
+        - Organizations
+      parameters:
+        - in: query
+          name: shortname
+          schema:
+            type: string
+          required: false
+          description: shortname of organization
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                    shortname:
+                      type: string
+                    name:
+                      type: string
+                    bio:
+                      type: string
+                    description:
+                      type: string
+                    email:
+                      type: string
+                    phone:
+                      type: string
+                    city:
+                      type: string
+                    country:
+                      type: string
+                    address:
+                      type: string
+                    website:
+                      type: string
+                    mission:
+                      type: string
+                    culture:
+                      type: string
+                    status:
+                      type: string
+                      enum:
+                        - PENDING
+                        - APPROVED
+                        - REJECTED
+                    verified_impact:
+                      type: boolean
+                    verified:
+                      type: boolean
+                    created_at:
+                      type: string
+                    updated_at:
+                      type: string
+  /organizations/:id:
+    get:
+      summary: get organization
+      security:
+        - bearerAuth:
+      description: Retrieve an organization by ID
+      tags:
+        - Organization
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the organization to retrieve
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '404':
+          description: Organization not found

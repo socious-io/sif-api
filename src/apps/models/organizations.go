@@ -193,8 +193,8 @@ func GetOrganization(id uuid.UUID) (*Organization, error) {
 	return o, nil
 }
 
-func (o *Organization) UpsertAndMember(userID uuid.UUID) error {
-	if err := o.Create(context.Background(), userID); err != nil {
+func (o *Organization) UpsertAndMember(ctx context.Context, userID uuid.UUID) error {
+	if err := o.Create(ctx, userID); err != nil {
 		return err
 	}
 	if _, err := Member(o.ID, userID); err != nil {
