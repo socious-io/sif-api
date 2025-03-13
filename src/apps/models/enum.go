@@ -11,6 +11,7 @@ type (
 	WalletENV                 string
 	ProjectStatus             string
 	KybVerificationStatusType string
+	DonationStatus            string
 )
 
 const (
@@ -28,6 +29,11 @@ const (
 	KYBStatusPending  KybVerificationStatusType = "PENDING"
 	KYBStatusApproved KybVerificationStatusType = "APPROVED"
 	KYBStatusRejected KybVerificationStatusType = "REJECTED"
+
+	DonationStatusPending  DonationStatus = "PENDING"
+	DonationStatusApproved DonationStatus = "APPROVED"
+	DonationStatusRejected DonationStatus = "REJECTED"
+	DonationStatusReleased DonationStatus = "RELEASED"
 )
 
 // ------------------------------------------------------

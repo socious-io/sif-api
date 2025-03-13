@@ -38,3 +38,11 @@ type KYBVerificationForm struct {
 type ApikeyForm struct {
 	Name string `json:"name"`
 }
+
+type DnateDepositForm struct {
+	Currency    string      `json:"currency" validate:"required"`
+	Description string      `json:"description"`
+	TotalAmount float64     `json:"total_amount" validate:"required"`
+	TxID        string      `json:"txid" validate:"required"`
+	Meta        interface{} `json:"meta" validate:"required"`
+}

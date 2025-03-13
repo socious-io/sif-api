@@ -2,6 +2,7 @@ package views
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"sif/src/apps/auth"
 	"sif/src/apps/models"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/socious-io/gopay"
 	database "github.com/socious-io/pkg_database"
 )
 
@@ -184,5 +186,63 @@ func projectsGroup(router *gin.Engine) {
 			return
 		}
 		c.JSON(http.StatusCreated, gin.H{"vote": vote})
+	})
+
+	g.POST("/:id/donates", func(c *gin.Context) {
+		user := c.MustGet("user").(*models.User)
+		if user.IdentityVerifiedAt == nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "You must verify your identity before donating"})
+			return
+		}
+
+		form := new(DnateDepositForm)
+		if err := c.ShouldBindJSON(form); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		project, err := models.GetProject(uuid.MustParse(c.Param("id")), user.ID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		donation := &models.Donation{
+			UserID:      user.ID,
+			ProjectID:   project.ID,
+			Currency:    form.Currency,
+			TotalAmount: form.TotalAmount,
+			Status:      models.DonationStatusPending,
+		}
+
+		if err := donation.Create(c.MustGet("ctx").(context.Context)); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		//Start a payment session
+		payment, err := gopay.New(gopay.PaymentParams{
+			Tag:         fmt.Sprintf("Donation-%s-%s", *project.Title, user.Username),
+			Description: form.Description,
+			Ref:         donation.ID.String(),
+			Type:        gopay.CRYPTO,
+			Currency:    gopay.USD,
+			TotalAmount: donation.TotalAmount,
+		})
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if err := payment.ConfirmDeposit(form.TxID, form.Meta); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		donation.Status = models.DonationStatusApproved
+		if err := donation.Update(c.MustGet("ctx").(context.Context)); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusCreated, gin.H{"donation": donation})
 	})
 }

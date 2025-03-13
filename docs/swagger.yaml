@@ -250,7 +250,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - Votes
+        - Project
       parameters:
         - name: project_id
           in: path
@@ -266,6 +266,47 @@ paths:
                 properties:
                   message:
                     type: string
+  /projects/:id/donates:
+    post:
+      summary: donate to project
+      description: donate to project
+      security:
+        - bearerAuth: []
+      tags:
+        - Project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the project to donate to
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                donatedeposit:
+                  type: object
+                  properties:
+                    currency:
+                      type: string
+                    total_amount:
+                      type: number
+                    txid:
+                      type: string
+                    meta:
+                      type: object
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+
   /media:
     post:
       summary: upload media
