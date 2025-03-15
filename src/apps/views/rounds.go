@@ -2,7 +2,6 @@ package views
 
 import (
 	"net/http"
-	"sif/src/apps/auth"
 	"sif/src/apps/models"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +9,6 @@ import (
 
 func roundsGroup(router *gin.Engine) {
 	g := router.Group("rounds")
-	g.Use(auth.LoginRequired())
 
 	g.GET("", func(c *gin.Context) {
 		round, err := models.GetRoundLatestRound()

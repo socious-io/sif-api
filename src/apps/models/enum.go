@@ -12,6 +12,7 @@ type (
 	ProjectStatus             string
 	KybVerificationStatusType string
 	DonationStatus            string
+	OrganizationStatus        string
 )
 
 const (
@@ -34,6 +35,10 @@ const (
 	DonationStatusApproved DonationStatus = "APPROVED"
 	DonationStatusRejected DonationStatus = "REJECTED"
 	DonationStatusReleased DonationStatus = "RELEASED"
+
+	OrganizationStatusActive    OrganizationStatus = "ACTIVE"
+	OrganizationStatusNotActive OrganizationStatus = "NOT_ACTIVE"
+	OrganizationStatusPending   OrganizationStatus = "PENDING"
 )
 
 // ------------------------------------------------------

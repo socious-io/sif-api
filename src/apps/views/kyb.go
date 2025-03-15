@@ -39,6 +39,12 @@ func kybVerificationGroup(router *gin.Engine) {
 			return
 		}
 
+		org.Status = models.OrganizationStatusPending
+		if err := org.Update(ctx.(context.Context)); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
 		utils.DiscordSendTextMessage(
 			config.Config.Discord.SifKybChannel,
 			createDiscordReviewMessage(kyb, user, org),

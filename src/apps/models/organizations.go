@@ -34,7 +34,7 @@ type Organization struct {
 	Cover     *Media         `db:"-" json:"cover"`
 	CoverJson types.JSONText `db:"cover" json:"-"`
 
-	Status string `db:"status" json:"status"` //type -> org_status DEFAULT 'ACTIVE'
+	Status OrganizationStatus `db:"status" json:"status"`
 
 	VerifiedImpact bool `db:"verified_impact" json:"verified_impact"`
 	Verified       bool `db:"verified" json:"verified"`
@@ -84,6 +84,10 @@ func (o *Organization) Create(ctx context.Context, userID uuid.UUID) error {
 			return err
 		}
 		o.ID = newID
+	}
+
+	if o.Verified || o.VerifiedImpact {
+		o.Status = "ACTIVE"
 	}
 
 	rows, err := database.TxQuery(

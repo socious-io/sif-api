@@ -25,7 +25,7 @@ type Project struct {
 	SocialCause string `db:"social_cause" json:"social_cause"`
 
 	IdentityID   uuid.UUID      `db:"identity_id" json:"-"`
-	Identity     Identity       `db:"-" json:"identity"`
+	Identity     *Identity      `db:"-" json:"identity"`
 	IdentityJson types.JSONText `db:"identity" json:"-"`
 
 	CoverID   *uuid.UUID     `db:"cover_id" json:"-"`
@@ -33,7 +33,7 @@ type Project struct {
 	CoverJson types.JSONText `db:"cover" json:"-"`
 
 	RoundID   uuid.UUID      `db:"round_id" json:"-"`
-	Round     Round          `db:"-" json:"round"`
+	Round     *Round         `db:"-" json:"round"`
 	RoundJson types.JSONText `db:"round" json:"-"`
 
 	WalletAddress string    `db:"wallet_address" json:"wallet_address"`

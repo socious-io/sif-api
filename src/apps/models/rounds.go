@@ -25,6 +25,11 @@ type Round struct {
 	SubmissionStartAt time.Time `db:"submission_start_at" json:"submission_start_at"`
 	SubmissionEndAt   time.Time `db:"submission_end_at" json:"submission_end_at"`
 
+	TotalDonations   float64    `db:"total_donations" json:"total_donations"`
+	TotalVotes       int        `db:"total_votes" json:"total_votes"`
+	TotalProjects    int        `db:"total_projects" json:"total_projects"`
+	VotingAnnounceAt *time.Time `db:"voting_announce_at" json:"voting_announce_at"`
+
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
 }
