@@ -90,7 +90,7 @@ jobs:
 
   deploy-dev:
     needs: [test-build]
-    name: Deploy to Dev
+    name: Deploy to Prod
     # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ["sif-api-prod"]
     steps:
