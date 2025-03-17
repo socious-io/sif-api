@@ -1,10 +1,10 @@
-name: CI/CD Production Env
+name: CI/CD Development Env
 
 on:
   push:
     branches: ["production"]
   # pull_request:
-  #   branches: ["production"]
+  #   branches: ["main"]
 
 env:
   REGISTRY: ghcr.io
@@ -14,10 +14,11 @@ env:
   WORKER_IMAGE_NAME: ${{ github.repository }}-worker
 
 jobs:
+
   test-build:
     name: Test & Build for Production env
-    # if: github.ref == 'refs/heads/production' && github.event_name == 'push'
-    runs-on: ["socious-v3-production"]
+    # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ["sif-api-prod"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,8 +30,9 @@ jobs:
 
       - name: Copying build & test environment
         run: |
-          cp /etc/socious-api-v3/config.yml .
-          cp /etc/socious-api-v3/test.config.yml .
+          cp /etc/sif/config.yml .
+          cp /etc/sif/test.config.yml .
+          cp /etc/sif/gcs-service-account.json .
 
       - name: Downloading dependencies
         run: |
@@ -86,11 +88,11 @@ jobs:
       #     tags: ${{ steps.meta-worker.outputs.tags }}
       #     labels: ${{ steps.meta-worker.outputs.labels }}
 
-  deploy:
+  deploy-dev:
     needs: [test-build]
-    name: Deploy to Production
-    # if: github.ref == 'refs/heads/production' && github.event_name == 'push'
-    runs-on: ["socious-v3-production"]
+    name: Deploy to Dev
+    # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ["sif-api-prod"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -112,8 +114,8 @@ jobs:
       - name: Docker run
         run: |
           docker pull ${{ steps.meta.outputs.tags }}
-          docker ps -qa --filter "name=socious-api-v3" | grep -q . && docker stop socious-api-v3 && docker rm -fv socious-api-v3
-          docker run -d --restart always -p 5063:5063 -h socious-api-v3 --network sociousapiv3_default --name socious-api-v3 ${{ steps.meta.outputs.tags }}
+          docker ps -qa --filter "name=sif-api" | grep -q . && docker stop sif-api && docker rm -fv sif-api
+          docker run -d --restart always -p 5066:5066 -h sif-api --network sif_default --name sif-api ${{ steps.meta.outputs.tags }}
 
       # - name: Extract Docker metadata
       #   id: meta-worker
