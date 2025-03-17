@@ -81,8 +81,8 @@ func (ps ProjectStatus) Value() (driver.Value, error) {
 	return string(ps), nil
 }
 
-// ------------------------------------------------------
 
+// ------------------------------------------------------
 func (o *KybVerificationStatusType) Scan(value interface{}) error {
 	switch v := value.(type) {
 	case []byte:
@@ -96,6 +96,25 @@ func (o *KybVerificationStatusType) Scan(value interface{}) error {
 }
 
 func (o KybVerificationStatusType) Value() (driver.Value, error) {
+	return string(o), nil
+}
+
+// ----------------------------------------------------------
+
+
+func (o *OrganizationStatus) Scan(value interface{}) error {
+	switch v := value.(type) {
+	case []byte:
+		*o = OrganizationStatus(string(v))
+	case string:
+		*o = OrganizationStatus(v)
+	default:
+		return fmt.Errorf("failed to scan operator type: %v", value)
+	}
+	return nil
+}
+
+func (o OrganizationStatus) Value() (driver.Value, error) {
 	return string(o), nil
 }
 
