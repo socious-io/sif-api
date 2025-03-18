@@ -11,4 +11,5 @@ func Init(r *gin.Engine) {
 	kybVerificationGroup(r)
 	roundsGroup(r)
 	organizationsGroup(r)
+	syncGroup(r)
 }
