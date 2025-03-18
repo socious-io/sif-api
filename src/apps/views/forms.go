@@ -46,3 +46,8 @@ type DnateDepositForm struct {
 	TxID        string      `json:"txid" validate:"required"`
 	Meta        interface{} `json:"meta" validate:"required"`
 }
+
+type SyncForm struct {
+	Organizations []models.Organization `json:"organization"`
+	User          models.User           `json:"users" validate:"required"`
+}
