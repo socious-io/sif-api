@@ -16,7 +16,7 @@ func main() {
 	database.Connect(&database.ConnectOption{
 		URL:         config.Config.Database.URL,
 		SqlDir:      config.Config.Database.SqlDir,
-		MaxRequests: 5,
+		MaxRequests: 50,
 		Interval:    30 * time.Second,
 		Timeout:     5 * time.Second,
 	})
