@@ -87,9 +87,10 @@ func (o *Organization) Create(ctx context.Context, userID uuid.UUID) error {
 	}
 
 	if o.Verified || o.VerifiedImpact {
-		o.Status = "ACTIVE"
+		o.Status = OrganizationStatusActive
+	} else {
+		o.Status = OrganizationStatusNotActive
 	}
-
 	rows, err := database.TxQuery(
 		ctx,
 		tx,
@@ -117,6 +118,7 @@ func (o *Organization) Create(ctx context.Context, userID uuid.UUID) error {
 		tx.Rollback()
 		return err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		if err := rows.StructScan(o); err != nil {
@@ -124,7 +126,7 @@ func (o *Organization) Create(ctx context.Context, userID uuid.UUID) error {
 			return err
 		}
 	}
-	rows.Close()
+
 	if _, err := database.TxQuery(
 		ctx,
 		tx,
@@ -195,22 +197,6 @@ func GetOrganization(id uuid.UUID) (*Organization, error) {
 		return nil, err
 	}
 	return o, nil
-}
-
-func (o *Organization) UpsertAndMember(ctx context.Context, userID uuid.UUID) error {
-	if err := o.Create(ctx, userID); err != nil {
-		return err
-	}
-	if _, err := Member(o.ID, userID); err != nil {
-		om := &OrganizationMember{
-			OrganizationID: o.ID,
-			UserID:         userID,
-		}
-		if err := om.Create(context.Background()); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func Member(orgID, userID uuid.UUID) (*OrganizationMember, error) {

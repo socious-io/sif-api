@@ -73,7 +73,7 @@ func authGroup(router *gin.Engine) {
 		token.GetMyOrganizations(&orgs)
 
 		for _, o := range orgs {
-			if err := o.UpsertAndMember(ctx, user.ID); err != nil {
+			if err := o.Create(ctx, user.ID); err != nil {
 				log.Println(err.Error(), o)
 			}
 		}
