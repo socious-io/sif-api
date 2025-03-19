@@ -42,7 +42,7 @@ type ApikeyForm struct {
 type DnateDepositForm struct {
 	Currency    string      `json:"currency" validate:"required"`
 	Description string      `json:"description"`
-	TotalAmount float64     `json:"total_amount" validate:"required"`
+	Amount      float64     `json:"amount" validate:"required"`
 	TxID        string      `json:"txid" validate:"required"`
 	Meta        interface{} `json:"meta" validate:"required"`
 }

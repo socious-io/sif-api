@@ -206,11 +206,11 @@ func projectsGroup(router *gin.Engine) {
 			return
 		}
 		donation := &models.Donation{
-			UserID:      user.ID,
-			ProjectID:   project.ID,
-			Currency:    form.Currency,
-			TotalAmount: form.TotalAmount,
-			Status:      models.DonationStatusPending,
+			UserID:    user.ID,
+			ProjectID: project.ID,
+			Currency:  form.Currency,
+			Amount:    form.Amount,
+			Status:    models.DonationStatusPending,
 		}
 
 		if err := donation.Create(c.MustGet("ctx").(context.Context)); err != nil {
@@ -225,7 +225,7 @@ func projectsGroup(router *gin.Engine) {
 			Ref:         donation.ID.String(),
 			Type:        gopay.CRYPTO,
 			Currency:    gopay.USD,
-			TotalAmount: donation.TotalAmount,
+			TotalAmount: donation.Amount,
 		})
 
 		if err != nil {
