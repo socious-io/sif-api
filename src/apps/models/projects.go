@@ -28,7 +28,7 @@ type Project struct {
 	Identity     *Identity      `db:"-" json:"identity"`
 	IdentityJson types.JSONText `db:"identity" json:"-"`
 
-	CoverID   *uuid.UUID     `db:"cover_id" json:"-"`
+	CoverID   *uuid.UUID     `db:"cover_id" json:"cover_id"`
 	Cover     *Media         `db:"-" json:"cover"`
 	CoverJson types.JSONText `db:"cover" json:"-"`
 
