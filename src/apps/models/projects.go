@@ -28,13 +28,16 @@ type Project struct {
 	Identity     *Identity      `db:"-" json:"identity"`
 	IdentityJson types.JSONText `db:"identity" json:"-"`
 
-	CoverID   *uuid.UUID     `db:"cover_id" json:"-"`
+	CoverID   *uuid.UUID     `db:"cover_id" json:"cover_id"`
 	Cover     *Media         `db:"-" json:"cover"`
 	CoverJson types.JSONText `db:"cover" json:"-"`
 
 	RoundID   uuid.UUID      `db:"round_id" json:"-"`
 	Round     *Round         `db:"-" json:"round"`
 	RoundJson types.JSONText `db:"round" json:"-"`
+
+	TotalVotes     int     `db:"total_votes" json:"total_votes"`
+	TotalDonations float64 `db:"total_donations" json:"total_donations"`
 
 	WalletAddress string    `db:"wallet_address" json:"wallet_address"`
 	WalletEnv     WalletENV `db:"wallet_env" json:"wallet_env"`

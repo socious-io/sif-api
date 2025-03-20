@@ -14,8 +14,8 @@ type Donation struct {
 	UserID    uuid.UUID `json:"user_id" db:"user_id"`
 	ProjectID uuid.UUID `json:"project_id" db:"project_id"`
 
-	Currency    string  `json:"currency" db:"currency"`
-	TotalAmount float64 `json:"total_amount" db:"total_amount"`
+	Currency string  `json:"currency" db:"currency"`
+	Amount   float64 `json:"amount" db:"amount"`
 
 	Status               DonationStatus `json:"status" db:"status"`
 	TransactionID        *string        `json:"transaction_id" db:"transaction_id"`
@@ -39,7 +39,7 @@ func (d *Donation) Create(ctx context.Context) error {
 		"donations/create",
 		d.UserID,
 		d.ProjectID,
-		d.TotalAmount,
+		d.Amount,
 		d.Currency,
 		d.Status,
 	)
