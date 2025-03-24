@@ -394,18 +394,19 @@ paths:
             schema:
               type: string
             example: ebd02a72-f530-4d18-9a72-d7aa9ace1271
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  documents: ["http://media_url_1", "http://media_url_2", "http://media_url_3"]
         responses:
           '200':
             description: Successful response
             content:
               application/json:
-                schema:
-                  properties:
-                    documents:
-                      type: array
-                      items:
-                        type: string
-                      example: ["http://media_url_1", "http://media_url_2", "http://media_url_3"]
+                schema: {}
     get:
       summary: get kyb
       security:
