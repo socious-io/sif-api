@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/socious-io/goaccount"
@@ -41,9 +42,7 @@ type ConfigType struct {
 		Credentials string `mapstructure:"credentials"`
 	} `mapstructure:"upload"`
 
-	Admin struct {
-		AccessToken string `mapstructure:"access_token"`
-	} `mapstructure:"admin"`
+	AdminToken string `mapstructure:"admintoken"`
 
 	Discord struct {
 		Channel string `mapstructure:"channel"`
@@ -62,5 +61,6 @@ func Init(filename string) (*ConfigType, error) {
 		return nil, err
 	}
 	Config = conf
+	fmt.Println(Config.AdminToken, "---------------------------")
 	return conf, err
 }
