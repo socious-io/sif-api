@@ -46,7 +46,7 @@ type ConfigType struct {
 	} `mapstructure:"admin"`
 
 	Discord struct {
-		SifKybChannel string `mapstructure:"kyb_channel"`
+		Channel string `mapstructure:"channel"`
 	} `mapstructure:"discord"`
 }
 

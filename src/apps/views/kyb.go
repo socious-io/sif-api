@@ -46,7 +46,7 @@ func kybVerificationGroup(router *gin.Engine) {
 		}
 
 		utils.DiscordSendTextMessage(
-			config.Config.Discord.SifKybChannel,
+			config.Config.Discord.Channel,
 			createDiscordReviewMessage(kyb, user, org),
 		)
 
