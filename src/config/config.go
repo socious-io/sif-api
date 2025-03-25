@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/socious-io/goaccount"
@@ -61,6 +60,5 @@ func Init(filename string) (*ConfigType, error) {
 		return nil, err
 	}
 	Config = conf
-	fmt.Println(Config.AdminToken, "---------------------------")
 	return conf, err
 }

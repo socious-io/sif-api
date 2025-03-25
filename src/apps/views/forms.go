@@ -40,11 +40,12 @@ type ApikeyForm struct {
 }
 
 type DnateDepositForm struct {
-	Currency    string      `json:"currency" validate:"required"`
-	Description string      `json:"description"`
-	Amount      float64     `json:"amount" validate:"required"`
-	TxID        string      `json:"txid" validate:"required"`
-	Meta        interface{} `json:"meta" validate:"required"`
+	WalletAddress string      `json:"wallet_address" validate:"required"`
+	Currency      string      `json:"currency" validate:"required"`
+	Description   string      `json:"description"`
+	Amount        float64     `json:"amount" validate:"required"`
+	TxID          string      `json:"txid" validate:"required"`
+	Meta          interface{} `json:"meta" validate:"required"`
 }
 
 type SyncForm struct {

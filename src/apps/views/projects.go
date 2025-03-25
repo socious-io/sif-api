@@ -234,6 +234,14 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+		payment.SetToCryptoMode(form.Currency, 1)
+		if _, err := payment.AddIdentity(gopay.IdentityParams{
+			ID:      user.ID,
+			Account: form.WalletAddress,
+		}); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
 		if err := payment.ConfirmDeposit(form.TxID, form.Meta); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
