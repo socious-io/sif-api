@@ -21,9 +21,12 @@ DO UPDATE SET
     website = EXCLUDED.website,
     mission = EXCLUDED.mission,
     culture = EXCLUDED.culture,
-    status = EXCLUDED.status,
-    verified_impact = EXCLUDED.verified_impact,
-    verified = EXCLUDED.verified,
+    status = CASE
+        WHEN EXCLUDED.status = 'ACTIVE' THEN organizations.status
+        ELSE EXCLUDED.status
+    END,
+    verified_impact = CASE WHEN EXCLUDED.verified_impact THEN EXCLUDED.verified_impact ELSE organizations.verified_impact END,
+    verified = CASE WHEN EXCLUDED.verified THEN EXCLUDED.verified ELSE organizations.verified END,
     cover=EXCLUDED.cover,
     logo=EXCLUDED.logo
 RETURNING id;
