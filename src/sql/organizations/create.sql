@@ -1,7 +1,7 @@
 INSERT INTO organizations (
     id, shortname, name, bio, description, email, phone,
     city, country, address, website, mission, culture,
-    status, verified_impact, verified, cover, logo
+    status, verified_impact, verified, logo, cover
 ) VALUES (
     $1, $2, $3, $4, $5, $6, 
     $7, $8, $9, $10, $11, $12, 
