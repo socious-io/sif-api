@@ -3,28 +3,28 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 )
 
-func DiscordSendTextMessage(webhookURL, message string) error {
+func DiscordSendTextMessage(webhookURL, message string) {
 
 	payload, err := json.Marshal(map[string]string{
 		"content": message,
 	})
 	if err != nil {
-		return err
+		log.Printf("Discord content marshal error: %v", err)
+		return
 	}
 
 	resp, err := http.Post(webhookURL, "application/json", bytes.NewBuffer(payload))
 	if err != nil {
-		return err
+		log.Printf("Discord send error: %v", err)
+		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("failed to send log to Discord, status: %s", resp.Status)
+		log.Printf("failed to send log to Discord, status: %s", resp.Status)
 	}
-
-	return nil
 }

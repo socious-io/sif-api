@@ -41,12 +41,10 @@ type ConfigType struct {
 		Credentials string `mapstructure:"credentials"`
 	} `mapstructure:"upload"`
 
-	Admin struct {
-		AccessToken string `mapstructure:"access_token"`
-	} `mapstructure:"admin"`
+	AdminToken string `mapstructure:"admintoken"`
 
 	Discord struct {
-		SifKybChannel string `mapstructure:"kyb_channel"`
+		Channel string `mapstructure:"channel"`
 	} `mapstructure:"discord"`
 }
 

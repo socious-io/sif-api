@@ -108,4 +108,5 @@ func authGroup(router *gin.Engine) {
 		}
 		c.JSON(http.StatusAccepted, jwt)
 	})
+
 }

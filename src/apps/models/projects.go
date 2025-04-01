@@ -44,10 +44,11 @@ type Project struct {
 
 	UserVoted bool `db:"-" json:"user_voted"`
 
-	CreatedAt time.Time  `db:"created_at" json:"created_at"`
-	UpdatedAt time.Time  `db:"updated_at" json:"updated_at"`
-	ExpiresAt *time.Time `db:"expires_at" json:"expires_at"`
-	DeletedAt *time.Time `db:"deleted_at" json:"deleted_at"`
+	CreatedAt     time.Time  `db:"created_at" json:"created_at"`
+	UpdatedAt     time.Time  `db:"updated_at" json:"updated_at"`
+	ExpiresAt     *time.Time `db:"expires_at" json:"expires_at"`
+	DeletedAt     *time.Time `db:"deleted_at" json:"deleted_at"`
+	NotEligibleAt *time.Time `db:"not_eligible_at" json:"not_eligible_at"`
 }
 
 func (Project) TableName() string {

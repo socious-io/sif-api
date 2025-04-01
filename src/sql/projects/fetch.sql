@@ -8,5 +8,5 @@ FROM projects p
 JOIN identities i ON i.id=p.identity_id
 LEFT JOIN media m ON m.id=p.cover_id
 LEFT JOIN rounds r ON r.id=p.round_id
-WHERE p.id IN (?)
+WHERE p.id IN (?) AND not_eligible_at IS NULL
 ORDER BY p.created_at DESC

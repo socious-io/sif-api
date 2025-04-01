@@ -135,7 +135,7 @@ paths:
                     type: string
                   website:
                     type: string
-  /projects/:id:
+  /projects/{id}:
     parameters:
       - name: id
         required: true
@@ -243,7 +243,7 @@ paths:
                 properties:
                   message:
                     type: string  
-  /projects/:id/votes:
+  /projects/{id}/votes:
     post:
       summary: vote for project
       description: vote for project
@@ -266,7 +266,7 @@ paths:
                 properties:
                   message:
                     type: string
-  /projects/:id/donates:
+  /projects/{id}/donates:
     post:
       summary: donate to project
       description: donate to project
@@ -286,17 +286,14 @@ paths:
           application/json:
             schema:
               properties:
-                donatedeposit:
+                currency:
+                  type: string
+                total_amount:
+                  type: number
+                txid:
+                  type: string
+                meta:
                   type: object
-                  properties:
-                    currency:
-                      type: string
-                    total_amount:
-                      type: number
-                    txid:
-                      type: string
-                    meta:
-                      type: object
       responses:
         '201':
           description: Successful response
@@ -330,7 +327,7 @@ paths:
           content:
             application/json:
               schema: {}
-  /media/:id:
+  /media/{id}:
     parameters:
       - name: id
         required: true
@@ -394,18 +391,19 @@ paths:
             schema:
               type: string
             example: ebd02a72-f530-4d18-9a72-d7aa9ace1271
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  documents: ["http://media_url_1", "http://media_url_2", "http://media_url_3"]
         responses:
           '200':
             description: Successful response
             content:
               application/json:
-                schema:
-                  properties:
-                    documents:
-                      type: array
-                      items:
-                        type: string
-                      example: ["http://media_url_1", "http://media_url_2", "http://media_url_3"]
+                schema: {}
     get:
       summary: get kyb
       security:
@@ -542,7 +540,7 @@ paths:
                       type: string
                     updated_at:
                       type: string
-  /organizations/:id:
+  /organizations/{id}:
     get:
       summary: get organization
       security:

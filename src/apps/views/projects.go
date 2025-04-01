@@ -166,13 +166,8 @@ func projectsGroup(router *gin.Engine) {
 			return
 		}
 
-		r, err := models.GetRound(project.RoundID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
 		now := time.Now()
-		if !config.Config.Debug && (now.Before(r.VotingStartAt) || now.After(r.VotingEndAt)) {
+		if !config.Config.Debug && (now.Before(project.Round.VotingStartAt) || now.After(project.Round.VotingEndAt)) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "voting period is closed"})
 			return
 		}
@@ -205,6 +200,13 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+
+		now := time.Now()
+		if !config.Config.Debug && (now.Before(project.Round.VotingStartAt) || now.After(project.Round.VotingEndAt)) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "voting period is closed"})
+			return
+		}
+
 		donation := &models.Donation{
 			UserID:    user.ID,
 			ProjectID: project.ID,
@@ -232,6 +234,14 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+		payment.SetToCryptoMode(form.Currency, 1)
+		if _, err := payment.AddIdentity(gopay.IdentityParams{
+			ID:      user.ID,
+			Account: form.WalletAddress,
+		}); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
 		if err := payment.ConfirmDeposit(form.TxID, form.Meta); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -241,6 +251,15 @@ func projectsGroup(router *gin.Engine) {
 		donation.Status = models.DonationStatusApproved
 		if err := donation.Update(c.MustGet("ctx").(context.Context)); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		vote := &models.Vote{
+			UserID:    user.ID,
+			ProjectID: project.ID,
+		}
+		if err := vote.Create(c.MustGet("ctx").(context.Context)); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "already voted"})
 			return
 		}
 		c.JSON(http.StatusCreated, gin.H{"donation": donation})

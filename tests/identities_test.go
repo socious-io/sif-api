@@ -21,4 +21,5 @@ func identitiesGroup() {
 		identities := body["identities"].([]interface{})
 		Expect(len(identities)).NotTo(Equal(0))
 	})
+
 }

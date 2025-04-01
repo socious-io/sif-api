@@ -58,7 +58,7 @@ func adminAccessRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		access_token := c.Query("admin_access_token")
-		isAdmin := access_token == config.Config.Admin.AccessToken
+		isAdmin := access_token == config.Config.AdminToken
 
 		if !isAdmin {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Admin access required"})

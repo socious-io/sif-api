@@ -46,7 +46,7 @@ func kybVerificationGroup(router *gin.Engine) {
 		}
 
 		utils.DiscordSendTextMessage(
-			config.Config.Discord.SifKybChannel,
+			config.Config.Discord.Channel,
 			createDiscordReviewMessage(kyb, user, org),
 		)
 
@@ -138,12 +138,12 @@ func createDiscordReviewMessage(kyb *models.KYBVerification, u *models.User, org
 	message += fmt.Sprintf("Email: %s\n", u.Email)
 	message += "\nOrganization------------------------\n"
 	message += fmt.Sprintf("ID: %s\n", org.ID)
-	message += fmt.Sprintf("Name: %s\n", org.Name)
-	message += fmt.Sprintf("Description: %s\n", org.Description)
+	message += fmt.Sprintf("Name: %v\n", org.Name)
+	message += fmt.Sprintf("Description: %v\n", org.Description)
 	message += fmt.Sprintf("\nDocuments---------------------------%s\n\n", documents)
-	message += fmt.Sprintf("\nReviewing----------------------------\n")
-	message += fmt.Sprintf("Approve: <%s/kyb/%s/approve?admin_access_token=%s>\n", config.Config.Host, kyb.ID, config.Config.Admin.AccessToken)
-	message += fmt.Sprintf("Reject: <%s/kyb/%s/reject?admin_access_token=%s>\n", config.Config.Host, kyb.ID, config.Config.Admin.AccessToken)
+	message += "\nReviewing----------------------------\n"
+	message += fmt.Sprintf("Approve: <%s/kybs/%s/approve?admin_access_token=%s>\n", config.Config.Host, kyb.ID, config.Config.AdminToken)
+	message += fmt.Sprintf("Reject: <%s/kybs/%s/reject?admin_access_token=%s>\n", config.Config.Host, kyb.ID, config.Config.AdminToken)
 
 	return message
 
