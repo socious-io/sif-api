@@ -53,9 +53,9 @@ func (oc *OauthConnect) Upsert(ctx context.Context) error {
 	return nil
 }
 
-func GetOauthConnectByIdentityId(identityId uuid.UUID, provider OauthConnectedProviders) (*OauthConnect, error) {
+func GetOauthConnectByIdentityId(identityID uuid.UUID, provider OauthConnectedProviders) (*OauthConnect, error) {
 	oc := new(OauthConnect)
-	if err := database.Get(oc, "oauth_connects/get_by_identityid", identityId, provider); err != nil {
+	if err := database.Get(oc, "oauth_connects/get_by_identityid", identityID, provider); err != nil {
 		return nil, err
 	}
 	return oc, nil
