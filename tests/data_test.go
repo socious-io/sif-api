@@ -25,4 +25,8 @@ var (
 			"wallet_address": "test",
 		},
 	}
+
+	commentsData = []gin.H{
+		{"content": "test"},
+	}
 )

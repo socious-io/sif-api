@@ -134,13 +134,13 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 		ids       []interface{}
 	)
 	if len(p.Filters) > 0 {
-		var identityId string
+		var identityID string
 		for _, filter := range p.Filters {
 			if filter.Key == "identity_id" || filter.Key == "identity" {
-				identityId = filter.Value
+				identityID = filter.Value
 			}
 		}
-		if err := database.QuerySelect("projects/get_by_identity", &fetchList, identityId, p.Limit, p.Offet); err != nil {
+		if err := database.QuerySelect("projects/get_by_identity", &fetchList, identityID, p.Limit, p.Offet); err != nil {
 			return nil, 0, err
 		}
 	} else {
@@ -164,14 +164,10 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 	return projects, fetchList[0].TotalCount, nil
 }
 
-func GetProject(id, userID uuid.UUID) (*Project, error) {
+func GetProject(id uuid.UUID) (*Project, error) {
 	p := new(Project)
 	if err := database.Fetch(p, id); err != nil {
 		return nil, err
 	}
-	if vote, err := GetVoteByUserAndProject(userID, id); err == nil && vote != nil {
-		p.UserVoted = true
-	}
-
 	return p, nil
 }

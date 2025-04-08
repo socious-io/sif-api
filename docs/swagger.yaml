@@ -303,7 +303,244 @@ paths:
                 properties:
                   message:
                     type: string
-
+  /projects/{id}/comments:
+    get:
+      summary: get all comments
+      description: get all comments
+      security:
+        - bearerAuth: []
+      tags:
+        - Project
+      parameters:
+        - name: Current-Identity
+          in: header
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+    post:
+      summary: create comment
+      description: create comment
+      security:
+        - bearerAuth: []
+      tags:
+        - Project
+      parameters:
+        - name: Current-Identity
+          in: header
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                content:
+                  type: string
+                media_id:
+                  type: string
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema: {}
+  /projects/comments/{id}:
+    get:
+      summary: get comment
+      description: get comment
+      security:
+        - bearerAuth: []
+      tags:
+        - Project
+      parameters:
+        - name: Current-Identity
+          in: header
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the comment to retrieve
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema: {}
+    put:
+      summary: update comment
+      description: update comment
+      security:
+        - bearerAuth: []
+      tags:
+        - Project
+      parameters:
+        - name: Current-Identity
+          in: header
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the comment to update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                content:
+                  type: string
+                media_id:
+                  type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema: {}
+    delete:
+      summary: delete comment
+      description: delete comment
+      security:
+        - bearerAuth: []
+      tags:
+        - Project
+      parameters:
+        - name: Current-Identity
+          in: header
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the comment to delete
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema: {}
+  
+  /comments/{id}/likes:
+    post:
+      summary: like comment
+      description: like comment
+      security:
+        - bearerAuth: []
+      tags:
+        - Comment
+      parameters:
+        - name: Current-Identity
+          in: header
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the comment to like
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema: {}
+    delete:
+      summary: unlike comment
+      description: unlike comment
+      security:
+        - bearerAuth: []
+      tags:
+        - Comment
+      parameters:
+        - name: Current-Identity
+          in: header
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the comment to unlike
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema: {}
+  /comments/{id}/reactions:
+    post:
+      summary: react on comment
+      description: react on comment
+      security:
+        - bearerAuth: []
+      tags:
+        - Comment
+      parameters:
+        - name: Current-Identity
+          in: header
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the comment to react
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                reaction:
+                  type: string
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema: {}
+    delete:
+      summary: unreact on comment
+      description: unreact on comment
+      security:
+        - bearerAuth: []
+      tags:
+        - Comment
+      parameters:
+        - name: Current-Identity
+          in: header
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the comment to unreact
   /media:
     post:
       summary: upload media
