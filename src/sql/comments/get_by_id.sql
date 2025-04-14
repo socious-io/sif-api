@@ -15,4 +15,4 @@ FROM comments c
 LEFT JOIN comment_reactions cr2 ON c.id = cr2.comment_id AND cr2.identity_id = $2
 LEFT JOIN media m ON c.media_id = m.id
 JOIN identities i ON c.identity_id = i.id
-WHERE c.id = $1 AND c.identity_id = $2
+WHERE c.id = $1

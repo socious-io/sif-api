@@ -275,7 +275,7 @@ func projectsGroup(router *gin.Engine) {
 		identity := c.MustGet("identity").(*models.Identity)
 		projectID := uuid.MustParse(c.Param("id"))
 		pagination := c.MustGet("paginate").(database.Paginate)
-		comments, total, err := models.GetComments(identity.ID, projectID, pagination)
+		comments, total, err := models.GetComments(projectID, identity.ID, pagination)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

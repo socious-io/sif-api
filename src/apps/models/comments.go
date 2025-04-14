@@ -31,8 +31,8 @@ type Comment struct {
 	Likes         int64 `db:"likes" json:"likes"`
 	IdentityLiked bool  `db:"identity_liked" json:"identity_liked"`
 
-	Reactions        []byte  `db:"reactions" json:"reactions"`
-	IdentityReaction *string `db:"identity_reaction" json:"identity_reaction"`
+	Reactions        types.JSONText `db:"reactions" json:"reactions"`
+	IdentityReaction *string        `db:"identity_reaction" json:"identity_reaction"`
 }
 
 type Like struct {
@@ -201,7 +201,7 @@ func (r *Reaction) Delete(ctx context.Context) error {
 	return nil
 }
 
-func GetComments(identityID, projectID uuid.UUID, p database.Paginate) ([]Comment, int, error) {
+func GetComments(projectID, identityID uuid.UUID, p database.Paginate) ([]Comment, int, error) {
 	var (
 		comments  = []Comment{}
 		fetchList []database.FetchList

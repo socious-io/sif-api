@@ -346,6 +346,8 @@ paths:
                   type: string
                 media_id:
                   type: string
+                parent_id:
+                  type: string
       responses:
         '201':
           description: Successful response
