@@ -207,7 +207,7 @@ func GetComments(projectID, identityID uuid.UUID, p database.Paginate) ([]Commen
 		fetchList []database.FetchList
 	)
 
-	if err := database.QuerySelect("comments/get_list", &fetchList, projectID, identityID, p.Limit, p.Offet); err != nil {
+	if err := database.QuerySelect("comments/get_list", &fetchList, projectID, p.Limit, p.Offet); err != nil {
 		return nil, 0, err
 	}
 
@@ -238,11 +238,11 @@ func GetCommentChildren(parentID, identityID uuid.UUID) ([]Comment, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var c Comment
-		if err := rows.StructScan(&c); err != nil {
+		c := new(Comment)
+		if err := rows.StructScan(c); err != nil {
 			return nil, err
 		}
-		comments = append(comments, c)
+		comments = append(comments, *c)
 	}
 
 	return comments, nil

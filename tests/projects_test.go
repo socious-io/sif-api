@@ -74,6 +74,23 @@ func projectsGroup() {
 		}
 	})
 
+	It("should reply on comment", func() {
+		for _, data := range projectsData {
+			for i, cm := range commentsData {
+				w := httptest.NewRecorder()
+				cm["parent_id"] = commentsData[i]["id"]
+				reqBody, _ := json.Marshal(cm)
+				req, _ := http.NewRequest("POST", fmt.Sprintf("/projects/%s/comments", data["id"]), bytes.NewBuffer(reqBody))
+				req.Header.Set("Content-Type", "application/json")
+				req.Header.Set("Authorization", usersAuths[0])
+				router.ServeHTTP(w, req)
+				body := decodeBody(w.Body)
+				Expect(w.Code).To(Equal(http.StatusCreated))
+				Expect(body["content"]).To(Equal(cm["content"]))
+			}
+		}
+	})
+
 	It("should update comment", func() {
 
 		for i, cm := range commentsData {
@@ -124,7 +141,7 @@ func projectsGroup() {
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest("GET", fmt.Sprintf("/projects/%s/comments", data["id"]), nil)
 			req.Header.Set("Content-Type", "application/json")
-			req.Header.Set("Authorization", usersAuths[0])
+			req.Header.Set("Authorization", usersAuths[1])
 			router.ServeHTTP(w, req)
 			body := decodeBody(w.Body)
 			Expect(w.Code).To(Equal(http.StatusOK))
