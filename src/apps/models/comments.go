@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -218,11 +219,14 @@ func GetComments(projectID, identityID uuid.UUID, p database.Paginate) ([]Commen
 	defer rows.Close()
 
 	for rows.Next() {
-		var c Comment
-		if err := rows.StructScan(&c); err != nil {
+		c := new(Comment)
+		if err := rows.StructScan(c); err != nil {
 			return nil, 0, err
 		}
-		comments = append(comments, c)
+		if err := database.UnmarshalJSONTextFields(c); err != nil {
+			log.Println(err)
+		}
+		comments = append(comments, *c)
 	}
 
 	return comments, fetchList[0].TotalCount, nil
@@ -241,6 +245,9 @@ func GetCommentChildren(parentID, identityID uuid.UUID) ([]Comment, error) {
 		c := new(Comment)
 		if err := rows.StructScan(c); err != nil {
 			return nil, err
+		}
+		if err := database.UnmarshalJSONTextFields(c); err != nil {
+			log.Println(err)
 		}
 		comments = append(comments, *c)
 	}

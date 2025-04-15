@@ -278,7 +278,12 @@ func projectsGroup(router *gin.Engine) {
 
 		comments, total, err := models.GetComments(projectID, identity.ID, pagination)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusOK, gin.H{
+				"results": []gin.H{},
+				"total":   0,
+				"page":    c.MustGet("page"),
+				"limit":   c.MustGet("limit"),
+			})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{
