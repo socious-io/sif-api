@@ -21,7 +21,7 @@ import (
 func projectsGroup(router *gin.Engine) {
 	g := router.Group("projects")
 
-	g.GET("", paginate(), func(c *gin.Context) {
+	g.GET("", auth.LoginOptional(), paginate(), func(c *gin.Context) {
 		pagination := c.MustGet("paginate").(database.Paginate)
 
 		projects, total, err := models.GetProjects(pagination)
@@ -37,7 +37,7 @@ func projectsGroup(router *gin.Engine) {
 		})
 	})
 
-	g.GET("/:id", func(c *gin.Context) {
+	g.GET("/:id", auth.LoginOptional(), func(c *gin.Context) {
 
 		p, err := models.GetProject(uuid.MustParse(c.Param("id")))
 		if err != nil {
