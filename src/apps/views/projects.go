@@ -11,7 +11,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/martian/v3/log"
 	"github.com/google/uuid"
+	"github.com/socious-io/goaccount"
 	"github.com/socious-io/gopay"
 	database "github.com/socious-io/pkg_database"
 )
@@ -268,6 +270,24 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "already voted"})
 			return
 		}
+
+		// ADD impact point
+		go func() {
+			ip := goaccount.ImpactPoint{
+				UserID:              user.ID,
+				SocialCause:         project.SocialCause,
+				SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
+				TotalPoints:         int(donation.Amount),
+				Type:                "DONATION",
+				Meta: map[string]any{
+					"donation": donation,
+				},
+			}
+			if err := ip.AddImpactPoint(); err != nil {
+				log.Errorf("Failed to add impact point: %v", err)
+			}
+		}()
+
 		c.JSON(http.StatusCreated, gin.H{"donation": donation})
 	})
 
@@ -299,7 +319,7 @@ func projectsGroup(router *gin.Engine) {
 		id := uuid.MustParse(c.Param("id"))
 		comment, err := models.GetComment(id, identity.ID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, comment)
