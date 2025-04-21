@@ -101,10 +101,13 @@ func (c *Comment) Create(ctx context.Context) error {
 			return err
 		}
 	}
-	c, err = GetComment(c.ID, c.IdentityID)
-	if err != nil {
+
+	if updatedComment, err := GetComment(c.ID, c.IdentityID); err != nil {
 		return err
+	} else {
+		*c = *updatedComment
 	}
+
 	return nil
 }
 
@@ -136,10 +139,13 @@ func (c *Comment) Update(ctx context.Context) error {
 			return err
 		}
 	}
-	c, err = GetComment(c.ID, c.IdentityID)
-	if err != nil {
+
+	if updatedComment, err := GetComment(c.ID, c.IdentityID); err != nil {
 		return err
+	} else {
+		*c = *updatedComment
 	}
+
 	return nil
 }
 
@@ -226,7 +232,16 @@ func GetComments(projectID, identityID uuid.UUID, p database.Paginate) ([]Commen
 		if err := database.UnmarshalJSONTextFields(c); err != nil {
 			log.Println(err)
 		}
+		if c.ChildrenCount > 0 {
+			if children, err := GetCommentChildren(c.ID, identityID); err == nil {
+				c.Children = children
+			}
+		}
 		comments = append(comments, *c)
+	}
+
+	if len(fetchList) < 1 {
+		return comments, 0, nil
 	}
 
 	return comments, fetchList[0].TotalCount, nil
