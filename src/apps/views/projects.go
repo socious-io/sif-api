@@ -44,9 +44,9 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-
 		if u, ok := c.Get("user"); ok {
-			if v, err := models.GetVoteByUserAndProject(p.ID, u.(*models.User).ID); err == nil && v != nil {
+			v, err := models.GetVoteByUserAndProject(u.(*models.User).ID, p.ID)
+			if err == nil && v != nil {
 				p.UserVoted = true
 			}
 		}
