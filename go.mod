@@ -7,12 +7,13 @@ require (
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-openapi/runtime v0.28.0
-	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/golang-migrate/migrate/v4 v4.17.1
+	github.com/google/martian/v3 v3.3.3
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/onsi/ginkgo/v2 v2.20.2
 	github.com/onsi/gomega v1.34.2
-	github.com/socious-io/goaccount v0.1.7
+	github.com/socious-io/goaccount v0.1.9
 	github.com/socious-io/gopay v0.0.20
 	google.golang.org/api v0.214.0
 	gopkg.in/yaml.v2 v2.4.0
