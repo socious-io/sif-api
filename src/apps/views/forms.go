@@ -52,3 +52,13 @@ type SyncForm struct {
 	Organizations []models.Organization `json:"organization"`
 	User          models.User           `json:"users" validate:"required"`
 }
+
+type CommentForm struct {
+	Content  string     `json:"content" validate:"required"`
+	ParentID *uuid.UUID `json:"parent_id"`
+	MediaID  *uuid.UUID `json:"media_id"`
+}
+
+type ReactionForm struct {
+	Reaction string `json:"reaction" validate:"required"`
+}

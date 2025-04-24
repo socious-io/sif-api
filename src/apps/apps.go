@@ -19,11 +19,12 @@ func Init() *gin.Engine {
 	router := gin.Default()
 
 	router.Use(func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Minute)
 		defer cancel()
 		c.Set("ctx", ctx)
 		c.Next()
 	})
+
 	uploader := &utils.GCSUploader{
 		CDNUrl:          config.Config.Upload.CDN,
 		BucketName:      config.Config.Upload.Bucket,

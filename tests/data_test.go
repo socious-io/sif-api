@@ -14,6 +14,12 @@ var (
 			FirstName: "test",
 			LastName:  "test",
 		},
+		{
+			Username:  "test2",
+			Email:     "test2@test.com",
+			FirstName: "test2",
+			LastName:  "test2",
+		},
 	}
 	usersAuths []string
 
@@ -24,5 +30,9 @@ var (
 			"social_cause":   "test",
 			"wallet_address": "test",
 		},
+	}
+
+	commentsData = []gin.H{
+		{"content": "test"},
 	}
 )
