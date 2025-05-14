@@ -13,6 +13,7 @@ type (
 	KybVerificationStatusType string
 	DonationStatus            string
 	OrganizationStatus        string
+	PaymentType               string
 )
 
 const (
@@ -39,13 +40,12 @@ const (
 	OrganizationStatusActive    OrganizationStatus = "ACTIVE"
 	OrganizationStatusNotActive OrganizationStatus = "NOT_ACTIVE"
 	OrganizationStatusPending   OrganizationStatus = "PENDING"
+
+	Fiat   PaymentType = "Fiat"
+	Crypto PaymentType = "Crypto"
 )
 
 // ------------------------------------------------------
-
-func (v *IdentityType) Scan(value interface{}) error {
-	return scanEnum(value, (*string)(v))
-}
 
 func (v IdentityType) Value() (driver.Value, error) {
 	return string(v), nil
@@ -81,7 +81,6 @@ func (ps ProjectStatus) Value() (driver.Value, error) {
 	return string(ps), nil
 }
 
-
 // ------------------------------------------------------
 func (o *KybVerificationStatusType) Scan(value interface{}) error {
 	switch v := value.(type) {
@@ -101,7 +100,6 @@ func (o KybVerificationStatusType) Value() (driver.Value, error) {
 
 // ----------------------------------------------------------
 
-
 func (o *OrganizationStatus) Scan(value interface{}) error {
 	switch v := value.(type) {
 	case []byte:
@@ -116,6 +114,24 @@ func (o *OrganizationStatus) Scan(value interface{}) error {
 
 func (o OrganizationStatus) Value() (driver.Value, error) {
 	return string(o), nil
+}
+
+// ----------------------------------------------------------
+
+func (p *PaymentType) Scan(value interface{}) error {
+	switch v := value.(type) {
+	case []byte:
+		*p = PaymentType(string(v))
+	case string:
+		*p = PaymentType(v)
+	default:
+		return fmt.Errorf("failed to scan operator type: %v", value)
+	}
+	return nil
+}
+
+func (p PaymentType) Value() (driver.Value, error) {
+	return string(p), nil
 }
 
 // ----------------------------------------------------------

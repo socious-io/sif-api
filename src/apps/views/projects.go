@@ -16,6 +16,9 @@ import (
 	"github.com/socious-io/goaccount"
 	"github.com/socious-io/gopay"
 	database "github.com/socious-io/pkg_database"
+	"github.com/stripe/stripe-go/v81"
+	"github.com/stripe/stripe-go/v81/customer"
+	"github.com/stripe/stripe-go/v81/paymentmethod"
 )
 
 func projectsGroup(router *gin.Engine) {
@@ -49,6 +52,20 @@ func projectsGroup(router *gin.Engine) {
 			if err == nil && v != nil {
 				p.UserVoted = true
 			}
+
+			go func() {
+				ip := goaccount.ImpactPoint{
+					UserID:              u.(*models.User).ID,
+					SocialCause:         p.SocialCause,
+					SocialCauseCategory: string(utils.GetSDG(p.SocialCause)),
+					TotalPoints:         int(100),
+					Type:                "DONATION",
+					Meta:                map[string]any{},
+				}
+				if err := ip.AddImpactPoint(); err != nil {
+					log.Errorf("Failed to add impact point: %v", err)
+				}
+			}()
 		}
 
 		c.JSON(http.StatusOK, p)
@@ -242,18 +259,58 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		payment.SetToCryptoMode(form.Currency, 1)
-		if _, err := payment.AddIdentity(gopay.IdentityParams{
-			ID:      user.ID,
-			Account: form.WalletAddress,
-		}); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
+		if form.PaymentType == models.Fiat {
+			payment.SetToFiatMode("STRIPE")
+			if form.CardToken == nil && user.StripeCustomerID == nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "payment source card could not be found"})
+				return
+			}
+			if user.StripeCustomerID == nil {
+				cus, err := AddCustomer(user.Email)
+				if err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+					return
+				}
 
-		if err := payment.ConfirmDeposit(form.TxID, form.Meta); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
+				user.StripeCustomerID = &cus.ID
+				if err := user.Upsert(c.MustGet("ctx").(context.Context)); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+					return
+				}
+			}
+
+			if form.CardToken != nil {
+				if _, err := AttachPaymentMethod(*user.StripeCustomerID, *form.CardToken); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+					return
+				}
+			}
+
+			if _, err := payment.AddIdentity(gopay.IdentityParams{
+				ID:      user.ID,
+				Account: *user.StripeCustomerID,
+			}); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+			if err := payment.Deposit(); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			}
+
+		} else {
+			payment.SetToCryptoMode(form.Currency, 1)
+			if _, err := payment.AddIdentity(gopay.IdentityParams{
+				ID:      user.ID,
+				Account: form.WalletAddress,
+			}); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+
+			if err := payment.ConfirmDeposit(form.TxID, form.Meta); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
 		}
 
 		donation.Status = models.DonationStatusApproved
@@ -456,4 +513,44 @@ func projectsGroup(router *gin.Engine) {
 		c.JSON(http.StatusOK, gin.H{"message": "reaction removed"})
 	})
 
+}
+
+func AddCustomer(email string) (*stripe.Customer, error) {
+	// 1. Create payment method from token
+
+	// 2. Create customer with email and payment method
+	c, err := customer.New(&stripe.CustomerParams{
+		Email: stripe.String(email),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create customer: %v", err)
+	}
+
+	return c, nil
+}
+
+func AttachPaymentMethod(customerID string, cardToken string) (*stripe.PaymentMethod, error) {
+	pm, err := paymentmethod.New(&stripe.PaymentMethodParams{
+		Type: stripe.String("card"),
+		Card: &stripe.PaymentMethodCardParams{
+			Token: stripe.String(cardToken),
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create payment method: %v", err)
+	}
+	// 3. Attach payment method to customer
+	paymentmethod.Attach(pm.ID, &stripe.PaymentMethodAttachParams{
+		Customer: stripe.String(customerID),
+	})
+
+	_, err = customer.Update(customerID, &stripe.CustomerParams{
+		InvoiceSettings: &stripe.CustomerInvoiceSettingsParams{
+			DefaultPaymentMethod: stripe.String(pm.ID),
+		},
+	})
+	if err != nil {
+		return pm, fmt.Errorf("attached payment method but failed to set as default: %w", err)
+	}
+	return pm, nil
 }
