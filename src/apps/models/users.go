@@ -34,6 +34,7 @@ type User struct {
 	ImpactPoints      float32 `db:"impact_points" json:"impact_points"`
 	Donates           float32 `db:"donates" json:"donates"`
 	ProjectsSupported int     `db:"project_supported" json:"project_supported"`
+	StripeCustomerID  *string `db:"stripe_customer_id" json:"stripe_customer_id"`
 
 	IdentityVerifiedAt *time.Time `db:"identity_verified_at" json:"identity_verified_at"`
 	CreatedAt          time.Time  `db:"created_at" json:"created_at"`
@@ -68,6 +69,7 @@ func (u *User) Upsert(ctx context.Context) error {
 		u.FirstName, u.LastName, u.Username, u.Email,
 		u.City, u.Country, u.AvatarJson, u.CoverJson,
 		u.Language, u.ImpactPoints, u.IdentityVerifiedAt,
+		u.StripeCustomerID,
 	)
 	if err != nil {
 		return err

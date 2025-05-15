@@ -40,17 +40,19 @@ type ApikeyForm struct {
 }
 
 type DnateDepositForm struct {
-	WalletAddress string      `json:"wallet_address" validate:"required"`
-	Currency      string      `json:"currency" validate:"required"`
-	Description   string      `json:"description"`
-	Amount        float64     `json:"amount" validate:"required"`
-	TxID          string      `json:"txid" validate:"required"`
-	Meta          interface{} `json:"meta" validate:"required"`
+	PaymentType   models.PaymentType `json:"payment_type"`
+	WalletAddress string             `json:"wallet_address" validate:"required"`
+	Currency      string             `json:"currency" validate:"required"`
+	Description   string             `json:"description"`
+	Amount        float64            `json:"amount" validate:"required"`
+	TxID          string             `json:"txid" validate:"required"`
+	Meta          interface{}        `json:"meta" validate:"required"`
+	CardToken     *string            `json:"card_token"`
 }
 
 type SyncForm struct {
-	Organizations []models.Organization `json:"organization"`
-	User          models.User           `json:"users" validate:"required"`
+	Organizations []models.Organization `json:"organizations"`
+	User          models.User           `json:"user" validate:"required"`
 }
 
 type CommentForm struct {

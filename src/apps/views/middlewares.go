@@ -1,7 +1,6 @@
 package views
 
 import (
-	"fmt"
 	"net/http"
 	"sif/src/apps/auth"
 	"sif/src/apps/models"
@@ -84,9 +83,11 @@ func OrganizationRequired() gin.HandlerFunc {
 
 func AccountCenterRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		raw := fmt.Sprintf("%s:%s", config.Config.GoAccounts.ID, config.Config.GoAccounts.Secret)
-		hash, _ := auth.HashPassword(raw)
-		if hash != c.Request.Header.Get("x-account-center") {
+		id := c.Request.Header.Get("x-account-center-id")
+		secret := c.Request.Header.Get("x-account-center-secret")
+		hash, _ := auth.HashPassword(secret)
+
+		if id != config.Config.GoAccounts.ID || auth.CheckPasswordHash(secret, hash) != nil {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Account center required"})
 			c.Abort()
 			return
