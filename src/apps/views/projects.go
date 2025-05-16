@@ -177,10 +177,11 @@ func projectsGroup(router *gin.Engine) {
 
 	g.POST("/:id/votes", auth.LoginRequired(), func(c *gin.Context) {
 		user := c.MustGet("user").(*models.User)
-		if user.IdentityVerifiedAt == nil {
+		// Allow people vote and donate without verify
+		/* if user.IdentityVerifiedAt == nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "You must verify your identity before voting"})
 			return
-		}
+		} */
 
 		project, err := models.GetProject(uuid.MustParse(c.Param("id")))
 		if err != nil {
@@ -207,10 +208,11 @@ func projectsGroup(router *gin.Engine) {
 
 	g.POST("/:id/donates", auth.LoginRequired(), func(c *gin.Context) {
 		user := c.MustGet("user").(*models.User)
-		if user.IdentityVerifiedAt == nil {
+		// Allow people vote and donate without verify
+		/* if user.IdentityVerifiedAt == nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "You must verify your identity before donating"})
 			return
-		}
+		} */
 
 		form := new(DnateDepositForm)
 		if err := c.ShouldBindJSON(form); err != nil {
