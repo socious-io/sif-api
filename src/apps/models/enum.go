@@ -41,8 +41,8 @@ const (
 	OrganizationStatusNotActive OrganizationStatus = "NOT_ACTIVE"
 	OrganizationStatusPending   OrganizationStatus = "PENDING"
 
-	Fiat   PaymentType = "Fiat"
-	Crypto PaymentType = "Crypto"
+	Fiat   PaymentType = "FIAT"
+	Crypto PaymentType = "CRYPTO"
 )
 
 // ------------------------------------------------------
