@@ -36,6 +36,8 @@ type User struct {
 	ProjectsSupported int     `db:"project_supported" json:"project_supported"`
 	StripeCustomerID  *string `db:"stripe_customer_id" json:"stripe_customer_id"`
 
+	ReferredBy *uuid.UUID `db:"referred_by" json:"referred_by"`
+
 	IdentityVerifiedAt *time.Time `db:"identity_verified_at" json:"identity_verified_at"`
 	CreatedAt          time.Time  `db:"created_at" json:"created_at"`
 	UpdatedAt          time.Time  `db:"updated_at" json:"updated_at"`
@@ -69,7 +71,7 @@ func (u *User) Upsert(ctx context.Context) error {
 		u.FirstName, u.LastName, u.Username, u.Email,
 		u.City, u.Country, u.AvatarJson, u.CoverJson,
 		u.Language, u.ImpactPoints, u.IdentityVerifiedAt,
-		u.StripeCustomerID,
+		u.StripeCustomerID, u.ReferredBy,
 	)
 	if err != nil {
 		return err
