@@ -36,6 +36,8 @@ type Organization struct {
 
 	Status OrganizationStatus `db:"status" json:"status"`
 
+	ReferredBy *uuid.UUID `db:"referred_by" json:"referred_by"`
+
 	VerifiedImpact bool `db:"verified_impact" json:"verified_impact"`
 	Verified       bool `db:"verified" json:"verified"`
 

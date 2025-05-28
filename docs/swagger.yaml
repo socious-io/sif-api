@@ -292,6 +292,10 @@ paths:
                   type: number
                 txid:
                   type: string
+                payment_type:
+                  type: string
+                card_token:
+                  type: string
                 meta:
                   type: object
       responses:
