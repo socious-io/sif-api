@@ -200,7 +200,7 @@ func projectsGroup(router *gin.Engine) {
 				Meta: map[string]any{
 					"vote": vote,
 				},
-				UniqueTag: utils.GenerateUniqueTag(32),
+				UniqueTag: vote.ID.String(),
 			}
 			if err := ip.AddImpactPoint(); err != nil {
 				log.Errorf("Failed to add impact point: %v", err)
@@ -343,7 +343,7 @@ func projectsGroup(router *gin.Engine) {
 				Meta: map[string]any{
 					"donation": donation,
 				},
-				UniqueTag: utils.GenerateUniqueTag(32),
+				UniqueTag: donation.ID.String(),
 			}
 			if err := ip.AddImpactPoint(); err != nil {
 				log.Errorf("Failed to add impact point: %v", err)
