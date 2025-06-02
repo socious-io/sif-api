@@ -1,12 +1,15 @@
 package utils
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 func Copy(src interface{}, dst interface{}) error {
@@ -62,4 +65,10 @@ func GenerateChecksum(file io.Reader) (string, error) {
 	}
 	checksum := hash.Sum(nil)
 	return fmt.Sprintf("%x", checksum), nil
+}
+
+func GenerateUniqueTag(length int) string {
+	bytes := make([]byte, length)
+	rand.Read(bytes)
+	return fmt.Sprintf("tag_%s_%s", uuid.New().String(), base64.StdEncoding.EncodeToString(bytes))
 }

@@ -49,20 +49,6 @@ func projectsGroup(router *gin.Engine) {
 			if err == nil && v != nil {
 				p.UserVoted = true
 			}
-
-			go func() {
-				ip := goaccount.ImpactPoint{
-					UserID:              u.(*models.User).ID,
-					SocialCause:         p.SocialCause,
-					SocialCauseCategory: string(utils.GetSDG(p.SocialCause)),
-					TotalPoints:         int(100),
-					Type:                "DONATION",
-					Meta:                map[string]any{},
-				}
-				if err := ip.AddImpactPoint(); err != nil {
-					log.Errorf("Failed to add impact point: %v", err)
-				}
-			}()
 		}
 
 		c.JSON(http.StatusOK, p)
@@ -203,6 +189,24 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "already voted"})
 			return
 		}
+
+		go func() {
+			ip := goaccount.ImpactPoint{
+				UserID:              user.ID,
+				SocialCause:         project.SocialCause,
+				SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
+				TotalPoints:         int(100),
+				Type:                "DONATION",
+				Meta: map[string]any{
+					"vote": vote,
+				},
+				UniqueTag: utils.GenerateUniqueTag(32),
+			}
+			if err := ip.AddImpactPoint(); err != nil {
+				log.Errorf("Failed to add impact point: %v", err)
+			}
+		}()
+
 		c.JSON(http.StatusCreated, gin.H{"vote": vote})
 	})
 
@@ -339,6 +343,7 @@ func projectsGroup(router *gin.Engine) {
 				Meta: map[string]any{
 					"donation": donation,
 				},
+				UniqueTag: utils.GenerateUniqueTag(32),
 			}
 			if err := ip.AddImpactPoint(); err != nil {
 				log.Errorf("Failed to add impact point: %v", err)
