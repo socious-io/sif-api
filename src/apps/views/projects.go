@@ -189,24 +189,6 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "already voted"})
 			return
 		}
-
-		go func() {
-			ip := goaccount.ImpactPoint{
-				UserID:              user.ID,
-				SocialCause:         project.SocialCause,
-				SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
-				TotalPoints:         int(100),
-				Type:                "DONATION",
-				Meta: map[string]any{
-					"vote": vote,
-				},
-				UniqueTag: vote.ID.String(),
-			}
-			if err := ip.AddImpactPoint(); err != nil {
-				log.Errorf("Failed to add impact point: %v", err)
-			}
-		}()
-
 		c.JSON(http.StatusCreated, gin.H{"vote": vote})
 	})
 
@@ -317,6 +299,15 @@ func projectsGroup(router *gin.Engine) {
 			}
 		}
 
+		if payment.Status == gopay.ON_HOLD || *payment.TransactionStatus == gopay.ACTION_REQUIRED {
+			c.JSON(http.StatusAccepted, gin.H{
+				"message":         "payment is on hold",
+				"action_required": true,
+				"client_secret":   payment.ClientSecret,
+			})
+			return
+		}
+
 		donation.Status = models.DonationStatusApproved
 		if err := donation.Update(c.MustGet("ctx").(context.Context)); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -328,27 +319,25 @@ func projectsGroup(router *gin.Engine) {
 			ProjectID: project.ID,
 		}
 		if err := vote.Create(c.MustGet("ctx").(context.Context)); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "already voted"})
-			return
+			log.Infof("Failed to create vote: %v", err)
+		} else {
+			// ADD impact point only if vote is successful
+			go func() {
+				ip := goaccount.ImpactPoint{
+					UserID:              user.ID,
+					SocialCause:         project.SocialCause,
+					SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
+					TotalPoints:         int(donation.Amount),
+					Type:                "DONATION",
+					Meta: map[string]any{
+						"donation": donation,
+					},
+				}
+				if err := ip.AddImpactPoint(); err != nil {
+					log.Errorf("Failed to add impact point: %v", err)
+				}
+			}()
 		}
-
-		// ADD impact point
-		go func() {
-			ip := goaccount.ImpactPoint{
-				UserID:              user.ID,
-				SocialCause:         project.SocialCause,
-				SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
-				TotalPoints:         int(donation.Amount),
-				Type:                "DONATION",
-				Meta: map[string]any{
-					"donation": donation,
-				},
-				UniqueTag: donation.ID.String(),
-			}
-			if err := ip.AddImpactPoint(); err != nil {
-				log.Errorf("Failed to add impact point: %v", err)
-			}
-		}()
 
 		c.JSON(http.StatusCreated, gin.H{"donation": donation})
 	})
