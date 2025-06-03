@@ -240,8 +240,8 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=
 github.com/rogpeppe/go-internal v1.11.0 h1:cWPaGQEPrBb5/AsnsZesgZZ9yb1OQ+GOISoDNXVBh4M=
 github.com/rogpeppe/go-internal v1.11.0/go.mod h1:ddIwULY96R17DhadqLgMfk9H9tvdUzkipdSkR5nkCZA=
-github.com/socious-io/goaccount v0.1.91 h1:inLhwmYBx7+WiBzYX6J861UI6rv4F5LxZ7Zkkw11CzM=
-github.com/socious-io/goaccount v0.1.91/go.mod h1:Qw96MXiR3gcvBgppSe3gmt9TP9I/rJIG5tq1T0eSU/g=
+github.com/socious-io/goaccount v0.1.92 h1:Rz+ed5Tc7ZjVbn69UScWVavW/FnCy1skY9cL7j0xv/A=
+github.com/socious-io/goaccount v0.1.92/go.mod h1:f3HbHNpoNjxBhjqwqu2CzlUvNoNDgYAnJo2oq4Zz+kY=
 github.com/socious-io/gopay v0.0.26 h1:gGKXrP/UnNmHByDZFhli2iLa2Hg0xPgQLpkdgs6yP58=
 github.com/socious-io/gopay v0.0.26/go.mod h1:VaAZ2FwcmyYN7DrQUKOdGH56MGNlTgBzWH0G4EtqhxA=
 github.com/socious-io/pkg_database v1.0.0 h1:y7VNH6IDE49qGBgiseCsMA0h3FRWvmR5jpwtMryl5ow=
