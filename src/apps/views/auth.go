@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sif/src/apps/auth"
 	"sif/src/apps/models"
+	"sif/src/apps/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/socious-io/goaccount"
@@ -49,10 +50,12 @@ func authGroup(router *gin.Engine) {
 			ctx     = c.MustGet("ctx").(context.Context)
 		)
 
-		if err := token.GetUserProfile(user); err != nil {
+		u, err := token.GetUserProfile()
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+		utils.Copy(u, user)
 
 		if connect, err = models.GetOauthConnectByMUI(user.ID.String(), models.OauthConnectedProvidersSociousID); err != nil {
 			connect = &models.OauthConnect{
@@ -69,10 +72,15 @@ func authGroup(router *gin.Engine) {
 			return
 		}
 
-		var orgs = []models.Organization{}
-		token.GetMyOrganizations(&orgs)
+		orgs, err := token.GetMyOrganizations()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
-		for _, o := range orgs {
+		for _, org := range orgs {
+			var o = new(models.Organization)
+			utils.Copy(org, o)
 			if err := o.Create(ctx, user.ID); err != nil {
 				log.Println(err.Error(), o)
 			}

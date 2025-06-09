@@ -135,6 +135,31 @@ paths:
                     type: string
                   website:
                     type: string
+                  linkdin:
+                    type: string
+                  video:
+                    type: string
+                  problem_statement:
+                    type: string
+                  solution:
+                    type: string
+                  goals:
+                    type: string
+                  total_requested_amount:
+                    type: integer
+                  cost_beakdown:
+                    type: string
+                  impact_assessment:
+                    type: integer
+                  voluntery_contribution:
+                    type: string
+                  feasibility:
+                    type: string
+                  categry:
+                    enum:
+                      - OPEN_INNOVATION
+                      - WOMEN_LEADERS
+                      - EMERGING_MARKETS
   /projects/{id}:
     parameters:
       - name: id
@@ -227,6 +252,31 @@ paths:
                     type: string
                   website:
                     type: string
+                  linkdin:
+                    type: string
+                  video:
+                    type: string
+                  problem_statement:
+                    type: string
+                  solution:
+                    type: string
+                  goals:
+                    type: string
+                  total_requested_amount:
+                    type: integer
+                  cost_beakdown:
+                    type: string
+                  impact_assessment:
+                    type: integer
+                  voluntery_contribution:
+                    type: string
+                  feasibility:
+                    type: string
+                  categry:
+                    enum:
+                      - OPEN_INNOVATION
+                      - WOMEN_LEADERS
+                      - EMERGING_MARKETS
     delete:
       summary: delete project
       security:

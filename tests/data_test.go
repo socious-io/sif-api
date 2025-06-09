@@ -29,6 +29,7 @@ var (
 			"description":    "test",
 			"social_cause":   "test",
 			"wallet_address": "test",
+			"category":       "OPEN_INNOVATION",
 		},
 	}
 

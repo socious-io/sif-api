@@ -14,6 +14,7 @@ type (
 	DonationStatus            string
 	OrganizationStatus        string
 	PaymentType               string
+	ProjectCategory           string
 )
 
 const (
@@ -43,6 +44,10 @@ const (
 
 	Fiat   PaymentType = "FIAT"
 	Crypto PaymentType = "CRYPTO"
+
+	ProjectCategoryOpenInnovation  ProjectCategory = "OPEN_INNOVATION"
+	ProjectCategoryWomenLeaders    ProjectCategory = "WOMEN_LEADERS"
+	ProjectCategoryEmergingMarkets ProjectCategory = "EMERGING_MARKETS"
 )
 
 // ------------------------------------------------------
@@ -132,6 +137,14 @@ func (p *PaymentType) Scan(value interface{}) error {
 
 func (p PaymentType) Value() (driver.Value, error) {
 	return string(p), nil
+}
+
+func (pc *ProjectCategory) Scan(value interface{}) error {
+	return scanEnum(value, (*string)(pc))
+}
+
+func (pc ProjectCategory) Value() (driver.Value, error) {
+	return string(pc), nil
 }
 
 // ----------------------------------------------------------

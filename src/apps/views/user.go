@@ -14,4 +14,8 @@ func usersGroup(router *gin.Engine) {
 	g.GET("/profile", func(c *gin.Context) {
 		c.JSON(http.StatusOK, c.MustGet("user"))
 	})
+
+	g.GET("", func(c *gin.Context) {
+
+	})
 }

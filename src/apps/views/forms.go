@@ -7,16 +7,27 @@ import (
 )
 
 type ProjectForm struct {
-	Title         string                `json:"title" validate:"required"`
-	Description   string                `json:"description" validate:"required"`
-	Status        *models.ProjectStatus `json:"status"`
-	City          string                `json:"city"`
-	Country       string                `json:"country"`
-	SocialCause   string                `json:"social_cause" validate:"required"`
-	CoverID       *uuid.UUID            `json:"cover_id"`
-	WalletAddress string                `json:"wallet_address" validate:"required"`
-	WalletEnv     string                `json:"wallet_env"`
-	Website       string                `json:"website"`
+	Title                 string                `json:"title" validate:"required"`
+	Description           string                `json:"description" validate:"required"`
+	Status                *models.ProjectStatus `json:"status"`
+	City                  string                `json:"city"`
+	Country               string                `json:"country"`
+	SocialCause           string                `json:"social_cause" validate:"required"`
+	CoverID               *uuid.UUID            `json:"cover_id"`
+	WalletAddress         string                `json:"wallet_address" validate:"required"`
+	WalletEnv             string                `json:"wallet_env"`
+	Website               string                `json:"website"`
+	LinkedIn              *string               `json:"linkedin,omitempty"`
+	Video                 *string               `json:"video,omitempty"`
+	ProblemStatement      *string               `json:"problem_statement,omitempty"`
+	Solution              *string               `json:"solution,omitempty"`
+	Goals                 *string               `json:"goals,omitempty"`
+	TotalRequestedAmount  *int                  `json:"total_requested_amount,omitempty"`
+	CostBreakdown         *string               `json:"cost_breakdown,omitempty"`
+	ImpactAssessment      *int                  `json:"impact_assessment,omitempty"`
+	VoluntaryContribution *string               `json:"voluntary_contribution,omitempty"`
+	Feasibility           *string               `json:"feasibility,omitempty"`
+	Category              *string               `json:"category,omitempty"`
 }
 
 type AuthForm struct {
