@@ -20,7 +20,8 @@ INSERT INTO projects (
     impact_assessment,
     voluntery_contribution,
     feasibility,
-    category
+    category,
+    email
 )
 VALUES (
     $1, $2, $3, 
@@ -30,6 +31,6 @@ VALUES (
     $13, $14, $15,
     $16, $17, $18,
     $19, $20, $21,
-    $22
+    $22, $23
 )
 RETURNING *

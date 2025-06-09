@@ -52,6 +52,7 @@ type Project struct {
 	ImpactAssessment      int     `db:"impact_assessment" json:"impact_assessment"`
 	VoluntaryContribution *string `db:"voluntery_contribution" json:"voluntery_contribution"`
 	Feasibility           *string `db:"feasibility" json:"feasibility"`
+	Email                 *string `db:"email" json:"email"`
 
 	Category ProjectCategory `db:"category" json:"category"`
 
@@ -98,6 +99,7 @@ func (p *Project) Create(ctx context.Context) error {
 		p.VoluntaryContribution,
 		p.Feasibility,
 		p.Category,
+		p.Email,
 	)
 	if err != nil {
 		return err
@@ -139,6 +141,7 @@ func (p *Project) Update(ctx context.Context) error {
 		p.VoluntaryContribution,
 		p.Feasibility,
 		p.Category,
+		p.Email,
 	)
 
 	if err != nil {

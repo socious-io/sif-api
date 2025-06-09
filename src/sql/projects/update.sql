@@ -19,6 +19,7 @@ UPDATE projects p SET
     impact_assessment=$19,
     voluntery_contribution=$20,
     feasibility=$21,
-    category=$22
+    category=$22,
+    email=$23
 WHERE id=$1
 RETURNING *
