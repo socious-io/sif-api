@@ -189,6 +189,21 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "already voted"})
 			return
 		}
+		go func() {
+			ip := goaccount.ImpactPoint{
+				UserID:              user.ID,
+				SocialCause:         project.SocialCause,
+				SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
+				TotalPoints:         1,
+				Type:                "VOTING",
+				Meta: map[string]any{
+					"vote": vote,
+				},
+			}
+			if err := ip.AddImpactPoint(); err != nil {
+				log.Errorf("Failed to add impact point: %v", err)
+			}
+		}()
 		c.JSON(http.StatusCreated, gin.H{"vote": vote})
 	})
 
@@ -216,13 +231,17 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "voting period is closed"})
 			return
 		}
-
+		rate := form.Rate
+		if rate < 0 {
+			rate = 1
+		}
 		donation := &models.Donation{
 			UserID:    user.ID,
 			ProjectID: project.ID,
 			Currency:  form.Currency,
 			Amount:    form.Amount,
 			Status:    models.DonationStatusPending,
+			Rate:      rate,
 		}
 
 		if err := donation.Create(c.MustGet("ctx").(context.Context)); err != nil {
@@ -239,6 +258,8 @@ func projectsGroup(router *gin.Engine) {
 			Currency:    gopay.USD,
 			TotalAmount: donation.Amount,
 		})
+
+		donation.TransactionID = payment.ID.String()
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -301,19 +322,19 @@ func projectsGroup(router *gin.Engine) {
 
 		if payment.Status == gopay.ON_HOLD || *payment.TransactionStatus == gopay.ACTION_REQUIRED {
 			c.JSON(http.StatusAccepted, gin.H{
+				"donation":        donation,
 				"message":         "payment is on hold",
 				"action_required": true,
 				"client_secret":   payment.ClientSecret,
 			})
 			return
 		}
-
 		donation.Status = models.DonationStatusApproved
 		if err := donation.Update(c.MustGet("ctx").(context.Context)); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-
+		impactPoints := int(donation.Amount * donation.Rate)
 		vote := &models.Vote{
 			UserID:    user.ID,
 			ProjectID: project.ID,
@@ -321,25 +342,38 @@ func projectsGroup(router *gin.Engine) {
 		if err := vote.Create(c.MustGet("ctx").(context.Context)); err != nil {
 			log.Infof("Failed to create vote: %v", err)
 		} else {
-			// ADD impact point only if vote is successful
-			go func() {
-				ip := goaccount.ImpactPoint{
-					UserID:              user.ID,
-					SocialCause:         project.SocialCause,
-					SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
-					TotalPoints:         int(donation.Amount),
-					Type:                "DONATION",
-					Meta: map[string]any{
-						"donation": donation,
-					},
-				}
-				if err := ip.AddImpactPoint(); err != nil {
-					log.Errorf("Failed to add impact point: %v", err)
-				}
-			}()
+			impactPoints += 1
 		}
 
+		go func() {
+			ip := goaccount.ImpactPoint{
+				UserID:              user.ID,
+				SocialCause:         project.SocialCause,
+				SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
+				TotalPoints:         impactPoints,
+				Type:                "DONATION",
+				Meta: map[string]any{
+					"donation": donation,
+					"vote":     vote,
+				},
+			}
+			if err := ip.AddImpactPoint(); err != nil {
+				log.Errorf("Failed to add impact point: %v", err)
+			}
+		}()
+
 		c.JSON(http.StatusCreated, gin.H{"donation": donation})
+	})
+
+	g.GET("/donates/:id/confirm", auth.LoginRequired(), func(c *gin.Context) {
+		// TODO: confirm pay from stripe
+		donation, err := models.GetDonation(c.Param("id"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"donation": donation})
 	})
 
 	g.GET("/:id/comments", auth.LoginRequired(), paginate(), func(c *gin.Context) {

@@ -16,9 +16,10 @@ type Donation struct {
 
 	Currency string  `json:"currency" db:"currency"`
 	Amount   float64 `json:"amount" db:"amount"`
+	Rate     float64 `json:"rate" db:"rate"`
 
 	Status               DonationStatus `json:"status" db:"status"`
-	TransactionID        *string        `json:"transaction_id" db:"transaction_id"`
+	TransactionID        string         `json:"transaction_id" db:"transaction_id"`
 	ReleaseTransactionID *string        `json:"release_transaction_id" db:"release_transaction_id"`
 
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
@@ -78,4 +79,12 @@ func (d *Donation) Update(ctx context.Context) error {
 		}
 	}
 	return database.Fetch(d, d.ID)
+}
+
+func GetDonation(id interface{}) (*Donation, error) {
+	d := new(Donation)
+	if err := database.Fetch(d, id); err != nil {
+		return nil, err
+	}
+	return d, nil
 }

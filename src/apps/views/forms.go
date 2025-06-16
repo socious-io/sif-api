@@ -54,6 +54,7 @@ type DnateDepositForm struct {
 	PaymentType   models.PaymentType `json:"payment_type"`
 	WalletAddress string             `json:"wallet_address" validate:"required"`
 	Currency      string             `json:"currency" validate:"required"`
+	Rate          float64            `json:"rate"`
 	Description   string             `json:"description"`
 	Amount        float64            `json:"amount" validate:"required"`
 	TxID          string             `json:"txid" validate:"required"`
