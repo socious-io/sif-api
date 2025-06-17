@@ -226,11 +226,6 @@ func projectsGroup(router *gin.Engine) {
 			return
 		}
 
-		now := time.Now()
-		if !config.Config.Debug && (now.Before(project.Round.VotingStartAt) || now.After(project.Round.VotingEndAt)) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "voting period is closed"})
-			return
-		}
 		rate := form.Rate
 		if rate < 0 {
 			rate = 1
@@ -335,14 +330,18 @@ func projectsGroup(router *gin.Engine) {
 			return
 		}
 		impactPoints := int(donation.Amount * donation.Rate)
-		vote := &models.Vote{
-			UserID:    user.ID,
-			ProjectID: project.ID,
-		}
-		if err := vote.Create(c.MustGet("ctx").(context.Context)); err != nil {
-			log.Infof("Failed to create vote: %v", err)
-		} else {
-			impactPoints += 1
+		now := time.Now()
+		if now.After(project.Round.VotingStartAt) && now.Before(project.Round.VotingEndAt) {
+			vote := &models.Vote{
+				UserID:    user.ID,
+				ProjectID: project.ID,
+			}
+			if err := vote.Create(c.MustGet("ctx").(context.Context)); err != nil {
+				log.Infof("Failed to create vote: %v", err)
+			} else {
+				impactPoints += 1
+			}
+
 		}
 
 		go func() {
@@ -354,7 +353,6 @@ func projectsGroup(router *gin.Engine) {
 				Type:                "DONATION",
 				Meta: map[string]any{
 					"donation": donation,
-					"vote":     vote,
 				},
 			}
 			if err := ip.AddImpactPoint(); err != nil {
