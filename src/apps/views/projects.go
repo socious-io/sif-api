@@ -237,6 +237,7 @@ func projectsGroup(router *gin.Engine) {
 			Amount:    form.Amount,
 			Status:    models.DonationStatusPending,
 			Rate:      rate,
+			Anonymous: form.Anonymous,
 		}
 
 		if err := donation.Create(c.MustGet("ctx").(context.Context)); err != nil {
@@ -361,6 +362,21 @@ func projectsGroup(router *gin.Engine) {
 		}()
 
 		c.JSON(http.StatusCreated, gin.H{"donation": donation})
+	})
+
+	g.GET("/:id/donates", auth.LoginRequired(), paginate(), func(c *gin.Context) {
+		pagination := c.MustGet("paginate").(database.Paginate)
+		donations, total, err := models.GetDonations(c.Param("id"), pagination)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"results": donations,
+			"total":   total,
+			"page":    c.MustGet("page"),
+			"limit":   c.MustGet("limit"),
+		})
 	})
 
 	g.GET("/donates/:id/confirm", auth.LoginRequired(), func(c *gin.Context) {

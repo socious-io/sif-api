@@ -57,6 +57,16 @@ func projectsGroup() {
 		}
 	})
 
+	It("should get project donates", func() {
+		for _, data := range projectsData {
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", fmt.Sprintf("/projects/%s/donates", data["id"]), nil)
+			req.Header.Set("Authorization", usersAuths[0])
+			router.ServeHTTP(w, req)
+			Expect(w.Code).To(Equal(http.StatusOK))
+		}
+	})
+
 	It("should comment on project", func() {
 		for _, data := range projectsData {
 			for i, cm := range commentsData {

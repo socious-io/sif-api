@@ -60,6 +60,7 @@ type DnateDepositForm struct {
 	TxID          string             `json:"txid" validate:"required"`
 	Meta          interface{}        `json:"meta" validate:"required"`
 	CardToken     *string            `json:"card_token"`
+	Anonymous     bool               `json:"anonymous"`
 }
 
 type SyncForm struct {
