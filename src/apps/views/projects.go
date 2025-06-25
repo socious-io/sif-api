@@ -254,8 +254,8 @@ func projectsGroup(router *gin.Engine) {
 			Currency:    gopay.USD,
 			TotalAmount: donation.Amount,
 		})
-
-		donation.TransactionID = payment.ID.String()
+		pID := payment.ID.String()
+		donation.TransactionID = &pID
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -24,7 +24,7 @@ type Donation struct {
 	Anonymous bool    `json:"anonymous" db:"anonymous"`
 
 	Status               DonationStatus `json:"status" db:"status"`
-	TransactionID        string         `json:"transaction_id" db:"transaction_id"`
+	TransactionID        *string        `json:"transaction_id" db:"transaction_id"`
 	ReleaseTransactionID *string        `json:"release_transaction_id" db:"release_transaction_id"`
 
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
@@ -49,6 +49,7 @@ func (d *Donation) Create(ctx context.Context) error {
 		d.Currency,
 		d.Status,
 		d.Anonymous,
+		d.Rate,
 	)
 	if err != nil {
 		return err
