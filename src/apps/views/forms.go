@@ -28,6 +28,7 @@ type ProjectForm struct {
 	VoluntaryContribution *string               `json:"voluntary_contribution,omitempty"`
 	Feasibility           *string               `json:"feasibility,omitempty"`
 	Category              *string               `json:"category,omitempty"`
+	Email                 string               `json:"email" validate:"required,email"`
 }
 
 type AuthForm struct {
