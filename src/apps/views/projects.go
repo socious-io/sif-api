@@ -230,6 +230,7 @@ func projectsGroup(router *gin.Engine) {
 		if rate < 0 {
 			rate = 1
 		}
+
 		donation := &models.Donation{
 			UserID:    user.ID,
 			ProjectID: project.ID,
@@ -263,6 +264,8 @@ func projectsGroup(router *gin.Engine) {
 		}
 		if form.PaymentType == models.Fiat {
 			fiatService := config.Config.Payment.Fiats[0]
+
+			payment.Currency = gopay.Currency(form.Currency)
 			payment.SetToFiatMode(fiatService.Name)
 			if form.CardToken == nil && user.StripeCustomerID == nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "payment source card could not be found"})
