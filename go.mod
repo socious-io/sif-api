@@ -14,7 +14,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.20.2
 	github.com/onsi/gomega v1.34.2
 	github.com/socious-io/goaccount v0.1.92
-	github.com/socious-io/gopay v0.0.26
+	github.com/socious-io/gopay v0.0.28
 	google.golang.org/api v0.214.0
 	gopkg.in/yaml.v2 v2.4.0
 )
