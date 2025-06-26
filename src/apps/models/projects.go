@@ -43,17 +43,18 @@ type Project struct {
 	WalletAddress string    `db:"wallet_address" json:"wallet_address"`
 	WalletEnv     WalletENV `db:"wallet_env" json:"wallet_env"`
 
-	LinkedIn              *string `db:"linkdin" json:"linkdin"`
-	Video                 *string `db:"video" json:"video"`
-	ProblemStatement      *string `db:"problem_statement" json:"problem_statement"`
-	Solution              *string `db:"solution" json:"solution"`
-	Goals                 *string `db:"goals" json:"goals"`
-	TotalRequestedAmount  int     `db:"total_requested_amount" json:"total_requested_amount"`
-	CostBreakdown         *string `db:"cost_beakdown" json:"cost_breakdown"`
-	ImpactAssessment      int     `db:"impact_assessment" json:"impact_assessment"`
-	VoluntaryContribution *string `db:"voluntery_contribution" json:"voluntery_contribution"`
-	Feasibility           *string `db:"feasibility" json:"feasibility"`
-	Email                 *string `db:"email" json:"email"`
+	LinkedIn              *string               `db:"linkdin" json:"linkdin"`
+	Video                 *string               `db:"video" json:"video"`
+	ProblemStatement      *string               `db:"problem_statement" json:"problem_statement"`
+	Solution              *string               `db:"solution" json:"solution"`
+	Goals                 *string               `db:"goals" json:"goals"`
+	TotalRequestedAmount  int                   `db:"total_requested_amount" json:"total_requested_amount"`
+	CostBreakdown         *string               `db:"cost_beakdown" json:"cost_breakdown"`
+	ImpactAssessment      int                   `db:"impact_assessment" json:"impact_assessment"`
+	ImpactAssessmentType  *ImpactAssessmentType `db:"impact_assessment_type" json:"impact_assessment_type"`
+	VoluntaryContribution *string               `db:"voluntery_contribution" json:"voluntery_contribution"`
+	Feasibility           *string               `db:"feasibility" json:"feasibility"`
+	Email                 *string               `db:"email" json:"email"`
 
 	Category ProjectCategory `db:"category" json:"category"`
 
@@ -97,6 +98,7 @@ func (p *Project) Create(ctx context.Context) error {
 		p.TotalRequestedAmount,
 		p.CostBreakdown,
 		p.ImpactAssessment,
+		p.ImpactAssessmentType,
 		p.VoluntaryContribution,
 		p.Feasibility,
 		p.Category,
@@ -139,6 +141,7 @@ func (p *Project) Update(ctx context.Context) error {
 		p.TotalRequestedAmount,
 		p.CostBreakdown,
 		p.ImpactAssessment,
+		p.ImpactAssessmentType,
 		p.VoluntaryContribution,
 		p.Feasibility,
 		p.Category,

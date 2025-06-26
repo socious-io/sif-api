@@ -25,6 +25,7 @@ type ProjectForm struct {
 	TotalRequestedAmount  *int                  `json:"total_requested_amount,omitempty"`
 	CostBreakdown         *string               `json:"cost_breakdown,omitempty"`
 	ImpactAssessment      *int                  `json:"impact_assessment,omitempty"`
+	ImpactAssessmentType  *string               `json:"impact_assessment_type"`
 	VoluntaryContribution *string               `json:"voluntary_contribution,omitempty"`
 	Feasibility           *string               `json:"feasibility,omitempty"`
 	Category              *string               `json:"category,omitempty"`
