@@ -151,6 +151,10 @@ paths:
                     type: string
                   impact_assessment:
                     type: integer
+                  impact_assessment_type:
+                    enum:
+                      - OPTION_A  
+                      - OPTION_B  
                   voluntery_contribution:
                     type: string
                   feasibility:
@@ -268,6 +272,10 @@ paths:
                     type: string
                   impact_assessment:
                     type: integer
+                  impact_assessment_type:
+                    enum:
+                      - OPTION_A  
+                      - OPTION_B  
                   voluntery_contribution:
                     type: string
                   feasibility:

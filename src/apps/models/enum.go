@@ -50,8 +50,8 @@ const (
 	ProjectCategoryWomenLeaders    ProjectCategory = "WOMEN_LEADERS"
 	ProjectCategoryEmergingMarkets ProjectCategory = "EMERGING_MARKETS"
 
-	OptionA ImpactAssessmentType = "OptionA"
-	OptionB ImpactAssessmentType = "OptionB"
+	OptionA ImpactAssessmentType = "OPTION_A"
+	OptionB ImpactAssessmentType = "OPTION_B"
 )
 
 // ------------------------------------------------------
