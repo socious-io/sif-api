@@ -29,6 +29,7 @@ type ProjectForm struct {
 	VoluntaryContribution *string               `json:"voluntary_contribution,omitempty"`
 	Feasibility           *string               `json:"feasibility,omitempty"`
 	Category              *string               `json:"category,omitempty"`
+	Email                 string               `json:"email" validate:"required,email"`
 }
 
 type AuthForm struct {
@@ -61,6 +62,7 @@ type DnateDepositForm struct {
 	TxID          string             `json:"txid" validate:"required"`
 	Meta          interface{}        `json:"meta" validate:"required"`
 	CardToken     *string            `json:"card_token"`
+	Anonymous     bool               `json:"anonymous"`
 }
 
 type SyncForm struct {

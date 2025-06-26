@@ -230,6 +230,7 @@ func projectsGroup(router *gin.Engine) {
 		if rate < 0 {
 			rate = 1
 		}
+
 		donation := &models.Donation{
 			UserID:    user.ID,
 			ProjectID: project.ID,
@@ -237,6 +238,7 @@ func projectsGroup(router *gin.Engine) {
 			Amount:    form.Amount,
 			Status:    models.DonationStatusPending,
 			Rate:      rate,
+			Anonymous: form.Anonymous,
 		}
 
 		if err := donation.Create(c.MustGet("ctx").(context.Context)); err != nil {
@@ -253,8 +255,8 @@ func projectsGroup(router *gin.Engine) {
 			Currency:    gopay.USD,
 			TotalAmount: donation.Amount,
 		})
-
-		donation.TransactionID = payment.ID.String()
+		pID := payment.ID.String()
+		donation.TransactionID = &pID
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -262,6 +264,8 @@ func projectsGroup(router *gin.Engine) {
 		}
 		if form.PaymentType == models.Fiat {
 			fiatService := config.Config.Payment.Fiats[0]
+
+			payment.Currency = gopay.Currency(form.Currency)
 			payment.SetToFiatMode(fiatService.Name)
 			if form.CardToken == nil && user.StripeCustomerID == nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "payment source card could not be found"})
@@ -361,6 +365,21 @@ func projectsGroup(router *gin.Engine) {
 		}()
 
 		c.JSON(http.StatusCreated, gin.H{"donation": donation})
+	})
+
+	g.GET("/:id/donates", auth.LoginRequired(), paginate(), func(c *gin.Context) {
+		pagination := c.MustGet("paginate").(database.Paginate)
+		donations, total, err := models.GetDonations(c.Param("id"), pagination)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"results": donations,
+			"total":   total,
+			"page":    c.MustGet("page"),
+			"limit":   c.MustGet("limit"),
+		})
 	})
 
 	g.GET("/donates/:id/confirm", auth.LoginRequired(), func(c *gin.Context) {
