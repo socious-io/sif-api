@@ -17,9 +17,10 @@ UPDATE projects p SET
     total_requested_amount=$17,
     cost_beakdown=$18,
     impact_assessment=$19,
-    voluntery_contribution=$20,
-    feasibility=$21,
-    category=$22,
-    email=$23
+    impact_assessment_type=$20,
+    voluntery_contribution=$21,
+    feasibility=$22,
+    category=$23,
+    email=$24
 WHERE id=$1
 RETURNING *
