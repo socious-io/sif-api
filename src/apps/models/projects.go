@@ -50,7 +50,7 @@ type Project struct {
 	Goals                 *string               `db:"goals" json:"goals"`
 	TotalRequestedAmount  int                   `db:"total_requested_amount" json:"total_requested_amount"`
 	CostBreakdown         *string               `db:"cost_beakdown" json:"cost_breakdown"`
-	ImpactAssessment      int                   `db:"impact_assessment" json:"impact_assessment"`
+	ImpactAssessment      *string               `db:"impact_assessment" json:"impact_assessment"`
 	ImpactAssessmentType  *ImpactAssessmentType `db:"impact_assessment_type" json:"impact_assessment_type"`
 	VoluntaryContribution *string               `db:"voluntery_contribution" json:"voluntery_contribution"`
 	Feasibility           *string               `db:"feasibility" json:"feasibility"`
