@@ -189,6 +189,20 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "already voted"})
 			return
 		}
+
+		go func() {
+			ra := goaccount.ReferralAchievement{
+				RefereeID:       user.ID,
+				AchievementType: "VOTE",
+				Meta: map[string]any{
+					"vote": vote,
+				},
+			}
+			if err := ra.AddReferralAchievement(); err != nil {
+				log.Errorf("Failed to add achievement: %v", err)
+			}
+		}()
+
 		c.JSON(http.StatusCreated, gin.H{"vote": vote})
 	})
 
