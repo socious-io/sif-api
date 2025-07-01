@@ -2,11 +2,14 @@ package tests_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"sif/src/apps/models"
 
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -23,6 +26,18 @@ func projectsGroup() {
 			body := decodeBody(w.Body)
 			Expect(w.Code).To(Equal(http.StatusCreated))
 			projectsData[i]["id"] = body["id"]
+			ctx := context.Background()
+			donation := models.Donation{
+				UserID:    users[0].ID,
+				ProjectID: uuid.MustParse(body["id"].(string)),
+				Currency:  "USD",
+				Amount:    100,
+				Status:    models.DonationStatusApproved,
+				Rate:      1,
+			}
+			Expect(donation.Create(ctx)).To(Succeed())
+			donation.Currency = "JPY"
+			Expect(donation.Create(ctx)).To(Succeed())
 		}
 	})
 
@@ -54,6 +69,18 @@ func projectsGroup() {
 			req.Header.Set("Authorization", usersAuths[0])
 			router.ServeHTTP(w, req)
 			Expect(w.Code).To(Equal(http.StatusCreated))
+		}
+	})
+
+	It("should get project donates", func() {
+		for _, data := range projectsData {
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", fmt.Sprintf("/projects/%s/donates", data["id"]), nil)
+			req.Header.Set("Authorization", usersAuths[0])
+			router.ServeHTTP(w, req)
+			body := decodeBody(w.Body)
+			Expect(int(body["total"].(float64))).To(Equal(2))
+			Expect(w.Code).To(Equal(http.StatusOK))
 		}
 	})
 

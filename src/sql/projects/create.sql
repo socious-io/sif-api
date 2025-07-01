@@ -18,6 +18,7 @@ INSERT INTO projects (
     total_requested_amount,
     cost_beakdown,
     impact_assessment,
+    impact_assessment_type,
     voluntery_contribution,
     feasibility,
     category,
@@ -31,6 +32,6 @@ VALUES (
     $13, $14, $15,
     $16, $17, $18,
     $19, $20, $21,
-    $22, $23
+    $22, $23, $24
 )
 RETURNING *

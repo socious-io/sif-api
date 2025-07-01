@@ -50,5 +50,6 @@ $ cd sif-api
 $ cp .tmp.config.yml config.yml
 $ sudo docker-compose up -d
 $ go get
+$ go run cmd/migration/main.go up
 $ go run cmd/app/main.go
 ``` 
