@@ -9,7 +9,7 @@ UPDATE projects p SET
     wallet_address=$9,
     wallet_env=$10,
     website=$11,
-    linkdin=$12,
+    linkedin=$12,
     video=$13,
     problem_statement=$14,
     solution=$15,

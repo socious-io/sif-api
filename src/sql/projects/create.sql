@@ -10,7 +10,7 @@ INSERT INTO projects (
     wallet_address,
     wallet_env,
     website,
-    linkdin,
+    linkedin,
     video,
     problem_statement,
     solution,
