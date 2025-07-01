@@ -26,7 +26,7 @@ type ProjectForm struct {
 	CostBreakdown         *string               `json:"cost_breakdown,omitempty"`
 	ImpactAssessment      *string               `json:"impact_assessment,omitempty"`
 	ImpactAssessmentType  *string               `json:"impact_assessment_type"`
-	VoluntaryContribution *string               `json:"voluntary_contribution,omitempty"`
+	VoluntaryContribution *string               `json:"voluntery_contribution,omitempty"`
 	Feasibility           *string               `json:"feasibility,omitempty"`
 	Category              *string               `json:"category,omitempty"`
 	Email                 string                `json:"email" validate:"required,email"`
