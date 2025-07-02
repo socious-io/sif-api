@@ -9,7 +9,7 @@ UPDATE projects p SET
     wallet_address=$9,
     wallet_env=$10,
     website=$11,
-    linkdin=$12,
+    linkedin=$12,
     video=$13,
     problem_statement=$14,
     solution=$15,
@@ -17,9 +17,10 @@ UPDATE projects p SET
     total_requested_amount=$17,
     cost_beakdown=$18,
     impact_assessment=$19,
-    voluntery_contribution=$20,
-    feasibility=$21,
-    category=$22,
-    email=$23
+    impact_assessment_type=$20,
+    voluntery_contribution=$21,
+    feasibility=$22,
+    category=$23,
+    email=$24
 WHERE id=$1
 RETURNING *

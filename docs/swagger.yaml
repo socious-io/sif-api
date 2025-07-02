@@ -135,7 +135,7 @@ paths:
                     type: string
                   website:
                     type: string
-                  linkdin:
+                  linkedin:
                     type: string
                   video:
                     type: string
@@ -151,6 +151,10 @@ paths:
                     type: string
                   impact_assessment:
                     type: integer
+                  impact_assessment_type:
+                    enum:
+                      - OPTION_A  
+                      - OPTION_B  
                   voluntery_contribution:
                     type: string
                   feasibility:
@@ -252,7 +256,7 @@ paths:
                     type: string
                   website:
                     type: string
-                  linkdin:
+                  linkedin:
                     type: string
                   video:
                     type: string
@@ -268,6 +272,10 @@ paths:
                     type: string
                   impact_assessment:
                     type: integer
+                  impact_assessment_type:
+                    enum:
+                      - OPTION_A  
+                      - OPTION_B  
                   voluntery_contribution:
                     type: string
                   feasibility:
@@ -317,6 +325,36 @@ paths:
                   message:
                     type: string
   /projects/{id}/donates:
+    get:
+      summary: get donations for project
+      description: retrieve a list of donations for a specific project
+      security:
+        - bearerAuth: []
+      tags:
+        - Project
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    user_id:
+                      type: string
+                    amount:
+                      type: number
+                    currency:
+                      type: string
+                    status:
+                      type: string
+                    created_at:
+                      type: string
+                      format: date-time
     post:
       summary: donate to project
       description: donate to project
@@ -336,6 +374,8 @@ paths:
           application/json:
             schema:
               properties:
+                anonymous:
+                  type: boolean
                 currency:
                   type: string
                 total_amount:
@@ -493,7 +533,9 @@ paths:
           content:
             application/json:
               schema: {}
-  
+    
+
+
   /comments/{id}/likes:
     post:
       summary: like comment

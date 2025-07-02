@@ -24,10 +24,12 @@ type ProjectForm struct {
 	Goals                 *string               `json:"goals,omitempty"`
 	TotalRequestedAmount  *int                  `json:"total_requested_amount,omitempty"`
 	CostBreakdown         *string               `json:"cost_breakdown,omitempty"`
-	ImpactAssessment      *int                  `json:"impact_assessment,omitempty"`
-	VoluntaryContribution *string               `json:"voluntary_contribution,omitempty"`
+	ImpactAssessment      *string               `json:"impact_assessment,omitempty"`
+	ImpactAssessmentType  *string               `json:"impact_assessment_type"`
+	VoluntaryContribution *string               `json:"voluntery_contribution,omitempty"`
 	Feasibility           *string               `json:"feasibility,omitempty"`
 	Category              *string               `json:"category,omitempty"`
+	Email                 string                `json:"email" validate:"required,email"`
 }
 
 type AuthForm struct {
@@ -54,11 +56,13 @@ type DnateDepositForm struct {
 	PaymentType   models.PaymentType `json:"payment_type"`
 	WalletAddress string             `json:"wallet_address" validate:"required"`
 	Currency      string             `json:"currency" validate:"required"`
+	Rate          float64            `json:"rate"`
 	Description   string             `json:"description"`
 	Amount        float64            `json:"amount" validate:"required"`
 	TxID          string             `json:"txid" validate:"required"`
 	Meta          interface{}        `json:"meta" validate:"required"`
 	CardToken     *string            `json:"card_token"`
+	Anonymous     bool               `json:"anonymous"`
 }
 
 type SyncForm struct {

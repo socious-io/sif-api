@@ -15,6 +15,7 @@ type (
 	OrganizationStatus        string
 	PaymentType               string
 	ProjectCategory           string
+	ImpactAssessmentType      string
 )
 
 const (
@@ -48,6 +49,9 @@ const (
 	ProjectCategoryOpenInnovation  ProjectCategory = "OPEN_INNOVATION"
 	ProjectCategoryWomenLeaders    ProjectCategory = "WOMEN_LEADERS"
 	ProjectCategoryEmergingMarkets ProjectCategory = "EMERGING_MARKETS"
+
+	OptionA ImpactAssessmentType = "OPTION_A"
+	OptionB ImpactAssessmentType = "OPTION_B"
 )
 
 // ------------------------------------------------------
@@ -145,6 +149,16 @@ func (pc *ProjectCategory) Scan(value interface{}) error {
 
 func (pc ProjectCategory) Value() (driver.Value, error) {
 	return string(pc), nil
+}
+
+// ----------------------------------------------------------
+
+func (iat *ImpactAssessmentType) Scan(value interface{}) error {
+	return scanEnum(value, (*string)(iat))
+}
+
+func (iat ImpactAssessmentType) Value() (driver.Value, error) {
+	return string(iat), nil
 }
 
 // ----------------------------------------------------------

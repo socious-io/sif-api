@@ -7,6 +7,7 @@ services:
     environment:
       POSTGRES_USER: 'socious'
       POSTGRES_PASSWORD: 'passwd'
+      POSTGRES_DB: 'socious'
       PGDATA: '/data/postgres'
     volumes:
       - '../sif-postgres:/data/postgres'
