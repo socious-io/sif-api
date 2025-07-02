@@ -43,7 +43,7 @@ type Project struct {
 	WalletAddress string    `db:"wallet_address" json:"wallet_address"`
 	WalletEnv     WalletENV `db:"wallet_env" json:"wallet_env"`
 
-	LinkedIn              *string               `db:"linkdin" json:"linkdin"`
+	LinkedIn              *string               `db:"linkedin" json:"linkedin"`
 	Video                 *string               `db:"video" json:"video"`
 	ProblemStatement      *string               `db:"problem_statement" json:"problem_statement"`
 	Solution              *string               `db:"solution" json:"solution"`

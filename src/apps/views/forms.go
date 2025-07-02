@@ -17,7 +17,7 @@ type ProjectForm struct {
 	WalletAddress         string                `json:"wallet_address" validate:"required"`
 	WalletEnv             string                `json:"wallet_env"`
 	Website               string                `json:"website"`
-	LinkedIn              *string               `json:"linkdin,omitempty"`
+	LinkedIn              *string               `json:"linkedin,omitempty"`
 	Video                 *string               `json:"video,omitempty"`
 	ProblemStatement      *string               `json:"problem_statement,omitempty"`
 	Solution              *string               `json:"solution,omitempty"`
