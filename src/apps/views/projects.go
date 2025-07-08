@@ -348,17 +348,24 @@ func projectsGroup(router *gin.Engine) {
 		}
 		impactPoints := int(donation.Amount * donation.Rate)
 		now := time.Now()
+		alreadyVoted := false
 		if now.After(project.Round.VotingStartAt) && now.Before(project.Round.VotingEndAt) {
-			vote := &models.Vote{
-				UserID:    user.ID,
-				ProjectID: project.ID,
-			}
-			if err := vote.Create(c.MustGet("ctx").(context.Context)); err != nil {
-				log.Infof("Failed to create vote: %v", err)
+			vote, err := models.GetVoteByUserAndProject(user.ID, project.ID)
+			if err != nil && err.Error() != "sql: no rows in result set" {
+				log.Errorf("Failed to check if user has already voted: %v", err)
+			} else if vote == nil {
+				newVote := &models.Vote{
+					UserID:    user.ID,
+					ProjectID: project.ID,
+				}
+				if err := newVote.Create(c.MustGet("ctx").(context.Context)); err != nil {
+					log.Infof("Failed to create vote: %v", err)
+				} else {
+					impactPoints += 1
+				}
 			} else {
-				impactPoints += 1
+				alreadyVoted = true
 			}
-
 		}
 
 		go func() {
@@ -378,7 +385,7 @@ func projectsGroup(router *gin.Engine) {
 			}
 		}()
 
-		c.JSON(http.StatusCreated, gin.H{"donation": donation})
+		c.JSON(http.StatusCreated, gin.H{"donation": donation, "already_voted": alreadyVoted})
 	})
 
 	g.GET("/:id/donates", auth.LoginRequired(), paginate(), func(c *gin.Context) {
