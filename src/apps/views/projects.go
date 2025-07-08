@@ -240,7 +240,7 @@ func projectsGroup(router *gin.Engine) {
 		}
 
 		rate := form.Rate
-		if rate < 0 {
+		if rate <= 0 || rate >= 2 {
 			rate = 1
 		}
 
@@ -270,6 +270,8 @@ func projectsGroup(router *gin.Engine) {
 		})
 		pID := payment.ID.String()
 		donation.TransactionID = &pID
+
+		impactPoints := int(donation.Amount * rate)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -346,7 +348,7 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		impactPoints := int(donation.Amount * donation.Rate)
+
 		now := time.Now()
 		if now.After(project.Round.VotingStartAt) && now.Before(project.Round.VotingEndAt) {
 			vote := &models.Vote{
