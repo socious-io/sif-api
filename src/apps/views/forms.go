@@ -22,7 +22,7 @@ type ProjectForm struct {
 	ProblemStatement      *string               `json:"problem_statement,omitempty"`
 	Solution              *string               `json:"solution,omitempty"`
 	Goals                 *string               `json:"goals,omitempty"`
-	TotalRequestedAmount  *int                  `json:"total_requested_amount,omitempty"`
+	TotalRequestedAmount  *float64              `json:"total_requested_amount,omitempty"`
 	CostBreakdown         *string               `json:"cost_breakdown,omitempty"`
 	ImpactAssessment      *string               `json:"impact_assessment,omitempty"`
 	ImpactAssessmentType  *string               `json:"impact_assessment_type"`
