@@ -13,7 +13,7 @@ type Donation struct {
 	ID uuid.UUID `json:"id" db:"id"`
 
 	UserID   uuid.UUID      `json:"user_id" db:"user_id"`
-	User     User           `json:"user" db:"-"`
+	User     *User          `json:"user" db:"-"`
 	UserJson types.JSONText `json:"-" db:"user"`
 
 	ProjectID uuid.UUID `json:"project_id" db:"project_id"`
