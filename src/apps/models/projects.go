@@ -193,27 +193,9 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 			if err := database.QuerySelect("projects/get_by_round", &fetchList, roundID, p.Limit, p.Offet); err != nil {
 				return nil, 0, err
 			}
-		} else {
-			latestRound, err := GetRoundLatestRound()
-			if err != nil {
-				return nil, 0, err
-			}
-			if latestRound == nil {
-				return projects, 0, nil
-			}
-			if err := database.QuerySelect("projects/get_by_round", &fetchList, latestRound.ID.String(), p.Limit, p.Offet); err != nil {
-				return nil, 0, err
-			}
 		}
 	} else {
-		latestRound, err := GetRoundLatestRound()
-		if err != nil {
-			return nil, 0, err
-		}
-		if latestRound == nil {
-			return projects, 0, nil
-		}
-		if err := database.QuerySelect("projects/get_by_round", &fetchList, latestRound.ID.String(), p.Limit, p.Offet); err != nil {
+		if err := database.QuerySelect("projects/get", &fetchList, p.Limit, p.Offet); err != nil {
 			return nil, 0, err
 		}
 	}
