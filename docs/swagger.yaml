@@ -85,11 +85,20 @@ paths:
         '200':
           description: Successful response
       parameters:
-        - name: filter.identity
-          in: query
-          schema:
-            type: string
-          required: false
+      - name: filter.identity
+        in: query
+        description: UUID of the identity to filter projects by.
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: round_id
+        in: query
+        description: UUID of the round to filter projects by.
+        required: false
+        schema:
+          type: string
+          format: uuid
     post:
       summary: create projects
       security:

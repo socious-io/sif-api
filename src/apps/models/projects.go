@@ -176,14 +176,23 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 		ids       []interface{}
 	)
 	if len(p.Filters) > 0 {
-		var identityID string
+		var identityID, roundID string
 		for _, filter := range p.Filters {
 			if filter.Key == "identity_id" || filter.Key == "identity" {
 				identityID = filter.Value
 			}
+			if filter.Key == "round_id" {
+				roundID = filter.Value
+			}
 		}
-		if err := database.QuerySelect("projects/get_by_identity", &fetchList, identityID, p.Limit, p.Offet); err != nil {
-			return nil, 0, err
+		if identityID != "" {
+			if err := database.QuerySelect("projects/get_by_identity", &fetchList, identityID, p.Limit, p.Offet); err != nil {
+				return nil, 0, err
+			}
+		} else if roundID != "" {
+			if err := database.QuerySelect("projects/get_by_round", &fetchList, roundID, p.Limit, p.Offet); err != nil {
+				return nil, 0, err
+			}
 		}
 	} else {
 		if err := database.QuerySelect("projects/get", &fetchList, p.Limit, p.Offet); err != nil {
