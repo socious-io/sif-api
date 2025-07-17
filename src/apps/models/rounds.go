@@ -58,3 +58,24 @@ func GetRound(id uuid.UUID) (*Round, error) {
 	}
 	return r, nil
 }
+
+func GetAllRounds(p database.Paginate) ([]Round, int, error) {
+	var (
+		rounds    []Round
+		fetchList []database.FetchList
+		ids       []interface{}
+	)
+	if err := database.QuerySelect("rounds/get_all", &fetchList, p.Limit, p.Offet); err != nil {
+		return nil, 0, err
+	}
+	if len(fetchList) < 1 {
+		return rounds, 0, nil
+	}
+	for _, f := range fetchList {
+		ids = append(ids, f.ID)
+	}
+	if err := database.Fetch(&rounds, ids...); err != nil {
+		return nil, 0, err
+	}
+	return rounds, fetchList[0].TotalCount, nil
+}
