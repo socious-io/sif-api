@@ -21,7 +21,7 @@ func roundsGroup(router *gin.Engine) {
 		c.JSON(http.StatusOK, round)
 	})
 
-	g.GET("/all", auth.LoginOptional(), paginate(), func(c *gin.Context) {
+	g.GET("/rounds", auth.LoginOptional(), paginate(), func(c *gin.Context) {
 		p := c.MustGet("paginate").(database.Paginate)
 
 		rounds, total, err := models.GetAllRounds(p)

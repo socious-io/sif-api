@@ -222,4 +222,30 @@ func projectsGroup() {
 		}
 	})
 
+	It("should get paginated list of rounds without authorization", func() {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "/rounds/rounds?page=1&limit=3", nil)
+		router.ServeHTTP(w, req)
+
+		Expect(w.Code).To(Equal(http.StatusOK))
+
+		body := decodeBody(w.Body)
+
+		Expect(body).To(HaveKey("data"))
+		Expect(body).To(HaveKey("total"))
+
+		data := body["data"].([]interface{})
+		Expect(len(data)).To(BeNumerically("<=", 3))
+
+		if len(data) > 0 {
+			first := data[0].(map[string]interface{})
+			Expect(first).To(HaveKey("id"))
+			Expect(first).To(HaveKey("name"))
+			Expect(first).To(HaveKey("pool_amount"))
+			Expect(first).To(HaveKey("total_projects"))
+			Expect(first).To(HaveKey("submission_start_at"))
+			Expect(first).To(HaveKey("voting_end_at"))
+		}
+	})
+
 }
