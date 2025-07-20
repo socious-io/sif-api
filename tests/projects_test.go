@@ -235,7 +235,7 @@ func projectsGroup() {
 		Expect(body).To(HaveKey("total"))
 
 		data := body["data"].([]interface{})
-		Expect(len(data)).To(BeNumerically("<=", 3)) // limit is 3
+		Expect(len(data)).To(BeNumerically("<=", 3))
 
 		if len(data) > 0 {
 			first := data[0].(map[string]interface{})
