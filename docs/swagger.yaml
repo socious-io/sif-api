@@ -819,7 +819,77 @@ paths:
                     type: string
                   submission_end_at:
                     type: string
-  
+  /rounds/all:
+    get:
+      summary: Get all rounds
+      security:
+        - bearerAuth: []
+      description: Returns a paginated list of all rounds. Can be used without login.
+      tags:
+        - Rounds
+      parameters:
+        - name: page
+          in: query
+          description: Page number (starting from 1)
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            example: 10
+      responses:
+        '200':
+          description: List of all rounds
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        cover_id:
+                          type: string
+                          nullable: true
+                        pool_amount:
+                          type: integer
+                        voting_start_at:
+                          type: string
+                          format: date-time
+                        voting_end_at:
+                          type: string
+                          format: date-time
+                        submission_start_at:
+                          type: string
+                          format: date-time
+                        submission_end_at:
+                          type: string
+                          format: date-time
+                  total:
+                    type: integer
+                    example: 42
+      '500':
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "database error: connection refused"      
+
   /organizations:
     get:
       summary: get organizations
