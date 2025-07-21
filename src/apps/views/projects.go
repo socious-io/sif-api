@@ -23,12 +23,6 @@ func projectsGroup(router *gin.Engine) {
 
 	g.GET("", auth.LoginOptional(), paginate(), func(c *gin.Context) {
 		pagination := c.MustGet("paginate").(database.Paginate)
-		roundID := c.Query("round_id")
-
-		pagination.Filters = append(pagination.Filters, database.Filter{
-			Key:   "round_id",
-			Value: roundID,
-		})
 
 		projects, total, err := models.GetProjects(pagination)
 		if err != nil {
