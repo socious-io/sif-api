@@ -171,38 +171,38 @@ func (p *Project) Delete(ctx context.Context) error {
 
 func GetProjects(p database.Paginate) ([]Project, int, error) {
 	var (
-		projects  = []Project{}
+		projects  []Project
 		fetchList []database.FetchList
 		ids       []interface{}
 	)
-	if len(p.Filters) > 0 {
-		var identityID, roundID, category string
-		for _, filter := range p.Filters {
-			if filter.Key == "identity_id" || filter.Key == "identity" {
-				identityID = filter.Value
-			}
-			if filter.Key == "round_id" {
-				roundID = filter.Value
-			}
-			if filter.Key == "category" {
-				category = filter.Value
-			}
+
+	var identityID, roundID, category string
+	for _, filter := range p.Filters {
+		switch filter.Key {
+		case "identity_id", "identity":
+			identityID = filter.Value
+		case "round_id":
+			roundID = filter.Value
+		case "category":
+			category = filter.Value
 		}
-		if identityID != "" {
-			if err := database.QuerySelect("projects/get_by_identity", &fetchList, identityID, p.Limit, p.Offet); err != nil {
-				return nil, 0, err
-			}
-		} else if roundID != "" {
-			if err := database.QuerySelect("projects/get_by_round", &fetchList, roundID, p.Limit, p.Offet); err != nil {
-				return nil, 0, err
-			}
-		} else if category != "" {
-			if err := database.QuerySelect("projects/get_by_category", &fetchList, category, p.Limit, p.Offet); err != nil {
-				return nil, 0, err
-			}
+	}
+
+	if identityID != "" {
+		if err := database.QuerySelect("projects/get_by_identity", &fetchList, identityID, p.Limit, p.Offet); err != nil {
+			return nil, 0, err
 		}
 	} else {
-		if err := database.QuerySelect("projects/get", &fetchList, p.Limit, p.Offet); err != nil {
+		var roundIDParam interface{}
+		if roundID != "" {
+			roundIDParam = roundID
+		}
+		var categoryParam interface{}
+		if category != "" {
+			categoryParam = category
+		}
+
+		if err := database.QuerySelect("projects/get_filtered", &fetchList, roundIDParam, categoryParam, p.Limit, p.Offet); err != nil {
 			return nil, 0, err
 		}
 	}
