@@ -193,21 +193,12 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 			return nil, 0, err
 		}
 	} else {
-		var roundIDParam interface{}
-		if roundID != "" {
-			roundIDParam = roundID
-		}
-		var categoryParam interface{}
-		if category != "" {
-			categoryParam = category
-		}
-
-		if err := database.QuerySelect("projects/get_filtered", &fetchList, roundIDParam, categoryParam, p.Limit, p.Offet); err != nil {
+		if err := database.QuerySelect("projects/get_filtered", &fetchList, roundID, category, p.Limit, p.Offet); err != nil {
 			return nil, 0, err
 		}
 	}
 
-	if len(fetchList) < 1 {
+	if len(fetchList) == 0 {
 		return projects, 0, nil
 	}
 
@@ -221,6 +212,7 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 
 	return projects, fetchList[0].TotalCount, nil
 }
+
 
 func GetProject(id uuid.UUID) (*Project, error) {
 	p := new(Project)
