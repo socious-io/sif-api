@@ -248,6 +248,10 @@ github.com/socious-io/gopay v0.0.35 h1:4LQWcnA8lJL1Z9ysRuAYN6DoNmb+tosBKa8s/IEap
 github.com/socious-io/gopay v0.0.35/go.mod h1:VaAZ2FwcmyYN7DrQUKOdGH56MGNlTgBzWH0G4EtqhxA=
 github.com/socious-io/gopay v0.0.36 h1:ASc9pG6N1pFRVblpTSOHyEz+Z1SiLRiN8L37NptNDFE=
 github.com/socious-io/gopay v0.0.36/go.mod h1:VaAZ2FwcmyYN7DrQUKOdGH56MGNlTgBzWH0G4EtqhxA=
+github.com/socious-io/gopay v0.0.37-0.20250723043949-e4ee2fbf47fc h1:zERjXyNrYP8gUfm47lGRmS1VDsWVaQoILnl2cTpeZQw=
+github.com/socious-io/gopay v0.0.37-0.20250723043949-e4ee2fbf47fc/go.mod h1:VaAZ2FwcmyYN7DrQUKOdGH56MGNlTgBzWH0G4EtqhxA=
+github.com/socious-io/gopay v0.0.37-0.20250723044828-017d25deec03 h1:RroJMKqjJPVfx0EYaP/rXMVCSmYcn4TadKh0gYfFSVs=
+github.com/socious-io/gopay v0.0.37-0.20250723044828-017d25deec03/go.mod h1:VaAZ2FwcmyYN7DrQUKOdGH56MGNlTgBzWH0G4EtqhxA=
 github.com/socious-io/pkg_database v1.0.0 h1:y7VNH6IDE49qGBgiseCsMA0h3FRWvmR5jpwtMryl5ow=
 github.com/socious-io/pkg_database v1.0.0/go.mod h1:6YOOJBPcPq2XTnexr4QByeRZpjQ+pckft0YHAvL0npU=
 github.com/sony/gobreaker v1.0.0 h1:feX5fGGXSl3dYd4aHZItw+FpHLvvoaqkawKjVNiFMNQ=
