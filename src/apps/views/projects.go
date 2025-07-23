@@ -398,10 +398,26 @@ func projectsGroup(router *gin.Engine) {
 		})
 	})
 
-	g.GET("/donates/:id/confirm", auth.LoginRequired(), func(c *gin.Context) {
-		// TODO: confirm pay from stripe
+	g.PUT("/donates/:id/confirm", auth.LoginRequired(), func(c *gin.Context) {
+		form := new(DonateDepositConfirmForm)
+		if err := c.ShouldBindJSON(form); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
 		donation, err := models.GetDonation(c.Param("id"))
 		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		payment, err := gopay.FetchByUniqueRef(donation.ID.String())
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if err := payment.ConfirmPayment(form.PaymentIntentID); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}

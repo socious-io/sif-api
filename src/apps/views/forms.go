@@ -65,6 +65,10 @@ type DnateDepositForm struct {
 	Anonymous     bool               `json:"anonymous"`
 }
 
+type DonateDepositConfirmForm struct {
+	PaymentIntentID string `json:"payment_intent_id"`
+}
+
 type SyncForm struct {
 	Organizations []models.Organization `json:"organizations"`
 	User          models.User           `json:"user" validate:"required"`
