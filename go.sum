@@ -242,6 +242,8 @@ github.com/rogpeppe/go-internal v1.11.0 h1:cWPaGQEPrBb5/AsnsZesgZZ9yb1OQ+GOISoDN
 github.com/rogpeppe/go-internal v1.11.0/go.mod h1:ddIwULY96R17DhadqLgMfk9H9tvdUzkipdSkR5nkCZA=
 github.com/socious-io/goaccount v0.1.96 h1:OAmY1iJL5G/78OCyXoUMD/e9jGToCeW74dTMB61mK7o=
 github.com/socious-io/goaccount v0.1.96/go.mod h1:f3HbHNpoNjxBhjqwqu2CzlUvNoNDgYAnJo2oq4Zz+kY=
+github.com/socious-io/goaccount v0.1.97 h1:OA7RZ/m+gU3buYSWntV7orqUJG0Mq37bnPnnXV8KNlc=
+github.com/socious-io/goaccount v0.1.97/go.mod h1:f3HbHNpoNjxBhjqwqu2CzlUvNoNDgYAnJo2oq4Zz+kY=
 github.com/socious-io/gopay v0.0.26 h1:gGKXrP/UnNmHByDZFhli2iLa2Hg0xPgQLpkdgs6yP58=
 github.com/socious-io/gopay v0.0.26/go.mod h1:VaAZ2FwcmyYN7DrQUKOdGH56MGNlTgBzWH0G4EtqhxA=
 github.com/socious-io/gopay v0.0.35 h1:4LQWcnA8lJL1Z9ysRuAYN6DoNmb+tosBKa8s/IEaph8=

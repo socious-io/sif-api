@@ -197,6 +197,7 @@ func projectsGroup(router *gin.Engine) {
 				SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
 				TotalPoints:         1,
 				Type:                "VOTING",
+				Value:               float64(0),
 				Meta: map[string]any{
 					"vote": vote,
 				},
@@ -371,6 +372,7 @@ func projectsGroup(router *gin.Engine) {
 				TotalPoints:         impactPoints,
 				Type:                "DONATION",
 				UniqueTag:           donation.ID.String(),
+				Value:               float64(impactPoints),
 				Meta: map[string]any{
 					"donation": donation,
 				},
