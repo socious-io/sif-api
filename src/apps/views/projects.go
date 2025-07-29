@@ -197,6 +197,7 @@ func projectsGroup(router *gin.Engine) {
 				SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
 				TotalPoints:         1,
 				Type:                "VOTING",
+				UniqueTag:           vote.ID.String(),
 				Value:               float64(0),
 				Meta: map[string]any{
 					"vote": vote,
