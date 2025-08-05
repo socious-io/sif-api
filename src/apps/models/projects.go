@@ -75,6 +75,23 @@ func (Project) FetchQuery() string {
 	return "projects/fetch"
 }
 
+type ProjectPreview struct {
+	ID uuid.UUID `db:"id" json:"id"`
+
+	Title       *string `db:"title" json:"title"`
+	Description *string `db:"description" json:"description"`
+
+	SocialCause string `db:"social_cause" json:"social_cause"`
+
+	IdentityID   uuid.UUID      `db:"identity_id" json:"-"`
+	Identity     *Identity      `db:"-" json:"identity"`
+	IdentityJson types.JSONText `db:"identity" json:"-"`
+
+	CoverID   *uuid.UUID     `db:"cover_id" json:"cover_id"`
+	Cover     *Media         `db:"-" json:"cover"`
+	CoverJson types.JSONText `db:"cover" json:"-"`
+}
+
 func (p *Project) Create(ctx context.Context) error {
 	rows, err := database.Query(
 		ctx,
@@ -212,7 +229,6 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 
 	return projects, fetchList[0].TotalCount, nil
 }
-
 
 func GetProject(id uuid.UUID) (*Project, error) {
 	p := new(Project)
