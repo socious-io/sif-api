@@ -37,6 +37,26 @@ func projectsGroup(router *gin.Engine) {
 		})
 	})
 
+	g.GET("/preview", auth.LoginOptional(), paginate(), func(c *gin.Context) {
+		pagination := c.MustGet("paginate").(database.Paginate)
+
+		projects, total, err := models.GetProjects(pagination)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		projectsPreview := new([]models.ProjectPreview)
+		utils.Copy(projects, projectsPreview)
+
+		c.JSON(http.StatusOK, gin.H{
+			"results": projectsPreview,
+			"total":   total,
+			"page":    c.MustGet("page"),
+			"limit":   c.MustGet("limit"),
+		})
+	})
+
 	g.GET("/:id", auth.LoginOptional(), func(c *gin.Context) {
 
 		p, err := models.GetProject(uuid.MustParse(c.Param("id")))
