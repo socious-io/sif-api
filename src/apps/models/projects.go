@@ -75,6 +75,23 @@ func (Project) FetchQuery() string {
 	return "projects/fetch"
 }
 
+type ProjectPreview struct {
+	ID uuid.UUID `db:"id" json:"id"`
+
+	Title       *string `db:"title" json:"title"`
+	Description *string `db:"description" json:"description"`
+
+	SocialCause string `db:"social_cause" json:"social_cause"`
+
+	IdentityID   uuid.UUID      `db:"identity_id" json:"-"`
+	Identity     *Identity      `db:"-" json:"identity"`
+	IdentityJson types.JSONText `db:"identity" json:"-"`
+
+	CoverID   *uuid.UUID     `db:"cover_id" json:"cover_id"`
+	Cover     *Media         `db:"-" json:"cover"`
+	CoverJson types.JSONText `db:"cover" json:"-"`
+}
+
 func (p *Project) Create(ctx context.Context) error {
 	rows, err := database.Query(
 		ctx,
@@ -171,27 +188,34 @@ func (p *Project) Delete(ctx context.Context) error {
 
 func GetProjects(p database.Paginate) ([]Project, int, error) {
 	var (
-		projects  = []Project{}
+		projects  []Project
 		fetchList []database.FetchList
 		ids       []interface{}
 	)
-	if len(p.Filters) > 0 {
-		var identityID string
-		for _, filter := range p.Filters {
-			if filter.Key == "identity_id" || filter.Key == "identity" {
-				identityID = filter.Value
-			}
+
+	var identityID, roundID, category string
+	for _, filter := range p.Filters {
+		switch filter.Key {
+		case "identity_id", "identity":
+			identityID = filter.Value
+		case "round_id":
+			roundID = filter.Value
+		case "category":
+			category = filter.Value
 		}
+	}
+
+	if identityID != "" {
 		if err := database.QuerySelect("projects/get_by_identity", &fetchList, identityID, p.Limit, p.Offet); err != nil {
 			return nil, 0, err
 		}
 	} else {
-		if err := database.QuerySelect("projects/get", &fetchList, p.Limit, p.Offet); err != nil {
+		if err := database.QuerySelect("projects/get_filtered", &fetchList, roundID, category, p.Limit, p.Offet); err != nil {
 			return nil, 0, err
 		}
 	}
 
-	if len(fetchList) < 1 {
+	if len(fetchList) == 0 {
 		return projects, 0, nil
 	}
 

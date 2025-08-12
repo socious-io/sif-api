@@ -1,14 +1,21 @@
 package views
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"sif/src/apps/auth"
 	"sif/src/apps/models"
+	"sif/src/apps/utils"
 	"sif/src/config"
 	"strconv"
 	"strings"
 
+	"github.com/microcosm-cc/bluemonday"
 	database "github.com/socious-io/pkg_database"
+	"github.com/unrolled/secure"
 
 	"github.com/gin-gonic/gin"
 )
@@ -91,6 +98,81 @@ func AccountCenterRequired() gin.HandlerFunc {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Account center required"})
 			c.Abort()
 			return
+		}
+		c.Next()
+	}
+}
+
+func SecureHeaders(env string) gin.HandlerFunc {
+
+	IsDevelopment := env != "production"
+	options := secure.Options{
+		FrameDeny:          true, // X-Frame-Options: DENY
+		ContentTypeNosniff: true, // X-Content-Type-Options: nosniff
+		BrowserXssFilter:   true, // X-XSS-Protection: 1; mode=block (legacy)
+		// ReferrerPolicy:        "no-referrer",
+		ContentSecurityPolicy: "default-src 'self'; script-src 'self' $NONCE; img-src 'self' https: http:;", // Very important for XSS
+		// HSTS:
+		SSLRedirect:          true,
+		STSSeconds:           31536000,
+		STSIncludeSubdomains: true,
+		STSPreload:           true,
+		IsDevelopment:        IsDevelopment,
+	}
+
+	return func(c *gin.Context) {
+		s := secure.New(options)
+		nonce, err := s.ProcessAndReturnNonce(c.Writer, c.Request)
+		if err != nil {
+			c.AbortWithStatus(500)
+			return
+		}
+		c.Set("nonce", nonce)
+
+		c.Next()
+	}
+}
+
+func SecureRequest(p *bluemonday.Policy) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Check content type
+		isUrlEncodedContent := strings.Contains(c.GetHeader("Content-Type"), "application/x-www-form-urlencoded")
+		isMultipartContent := strings.Contains(c.GetHeader("Content-Type"), "multipart/form-data")
+		isJsonContent := strings.Contains(c.GetHeader("Content-Type"), "application/json")
+
+		// --- 1. Sanitize Query Parameters ---
+		q := c.Request.URL.Query()
+		utils.SanitizeURLValues(q, p)
+		c.Request.URL.RawQuery = q.Encode()
+
+		// --- 2. Sanitize Form Data (application/x-www-form-urlencoded or multipart) ---
+		if isUrlEncodedContent || isMultipartContent {
+			if err := c.Request.ParseForm(); err != nil {
+				c.AbortWithStatusJSON(400, gin.H{
+					"error": fmt.Sprintf("Invalid body payload, err: %v", err),
+				})
+				return
+			}
+			utils.SanitizeURLValues(c.Request.PostForm, p)
+		} else if isJsonContent {
+			var bodyBytes []byte
+			if c.Request.Body != nil {
+				bodyBytes, _ = io.ReadAll(c.Request.Body)
+			}
+
+			if len(bodyBytes) > 0 {
+				var data map[string]interface{}
+				if err := json.Unmarshal(bodyBytes, &data); err != nil {
+					c.AbortWithStatusJSON(400, gin.H{
+						"error": fmt.Sprintf("Invalid body payload, err: %v", err),
+					})
+					return
+				}
+
+				utils.SanitizeMap(data, p)
+				safeBody, _ := json.Marshal(data)
+				c.Request.Body = io.NopCloser(bytes.NewReader(safeBody))
+			}
 		}
 		c.Next()
 	}

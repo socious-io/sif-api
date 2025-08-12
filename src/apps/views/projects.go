@@ -37,6 +37,26 @@ func projectsGroup(router *gin.Engine) {
 		})
 	})
 
+	g.GET("/preview", auth.LoginOptional(), paginate(), func(c *gin.Context) {
+		pagination := c.MustGet("paginate").(database.Paginate)
+
+		projects, total, err := models.GetProjects(pagination)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		projectsPreview := new([]models.ProjectPreview)
+		utils.Copy(projects, projectsPreview)
+
+		c.JSON(http.StatusOK, gin.H{
+			"results": projectsPreview,
+			"total":   total,
+			"page":    c.MustGet("page"),
+			"limit":   c.MustGet("limit"),
+		})
+	})
+
 	g.GET("/:id", auth.LoginOptional(), func(c *gin.Context) {
 
 		p, err := models.GetProject(uuid.MustParse(c.Param("id")))
@@ -197,6 +217,8 @@ func projectsGroup(router *gin.Engine) {
 				SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
 				TotalPoints:         1,
 				Type:                "VOTING",
+				UniqueTag:           vote.ID.String(),
+				Value:               float64(0),
 				Meta: map[string]any{
 					"vote": vote,
 				},
@@ -371,6 +393,7 @@ func projectsGroup(router *gin.Engine) {
 				TotalPoints:         impactPoints,
 				Type:                "DONATION",
 				UniqueTag:           donation.ID.String(),
+				Value:               float64(impactPoints),
 				Meta: map[string]any{
 					"donation": donation,
 				},
@@ -398,10 +421,26 @@ func projectsGroup(router *gin.Engine) {
 		})
 	})
 
-	g.GET("/donates/:id/confirm", auth.LoginRequired(), func(c *gin.Context) {
-		// TODO: confirm pay from stripe
+	g.PUT("/donates/:id/confirm", auth.LoginRequired(), func(c *gin.Context) {
+		form := new(DonateDepositConfirmForm)
+		if err := c.ShouldBindJSON(form); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
 		donation, err := models.GetDonation(c.Param("id"))
 		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		payment, err := gopay.FetchByUniqueRef(donation.ID.String())
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if err := payment.ConfirmPayment(form.PaymentIntentID); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
