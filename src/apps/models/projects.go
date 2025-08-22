@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	database "github.com/socious-io/pkg_database"
+	database "github.com/socious-io/pkg_database"	
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx/types"
@@ -193,7 +193,7 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 		ids       []interface{}
 	)
 
-	var identityID, roundID, category string
+	var identityID, roundID, category, search string
 	for _, filter := range p.Filters {
 		switch filter.Key {
 		case "identity_id", "identity":
@@ -202,6 +202,8 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 			roundID = filter.Value
 		case "category":
 			category = filter.Value
+		case "search":
+			search = filter.Value
 		}
 	}
 
@@ -210,7 +212,7 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 			return nil, 0, err
 		}
 	} else {
-		if err := database.QuerySelect("projects/get_filtered", &fetchList, roundID, category, p.Limit, p.Offet); err != nil {
+		if err := database.QuerySelect("projects/get_filtered", &fetchList, roundID, category, search, p.Limit, p.Offet); err != nil {
 			return nil, 0, err
 		}
 	}
