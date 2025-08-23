@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	database "github.com/socious-io/pkg_database"	
+	database "github.com/socious-io/pkg_database"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx/types"
@@ -65,6 +65,7 @@ type Project struct {
 	ExpiresAt     *time.Time `db:"expires_at" json:"expires_at"`
 	DeletedAt     *time.Time `db:"deleted_at" json:"deleted_at"`
 	NotEligibleAt *time.Time `db:"not_eligible_at" json:"not_eligible_at"`
+	SearchVector  string     `db:"search_vector"`
 }
 
 func (Project) TableName() string {
@@ -202,7 +203,7 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 			roundID = filter.Value
 		case "category":
 			category = filter.Value
-		case "search":
+		case "q":
 			search = filter.Value
 		}
 	}
