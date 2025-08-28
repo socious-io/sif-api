@@ -422,6 +422,8 @@ func projectsGroup(router *gin.Engine) {
 	})
 
 	g.PUT("/donates/:id/confirm", auth.LoginRequired(), func(c *gin.Context) {
+		ctx := c.MustGet("ctx").(context.Context)
+
 		form := new(DonateDepositConfirmForm)
 		if err := c.ShouldBindJSON(form); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -445,7 +447,17 @@ func projectsGroup(router *gin.Engine) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"donation": donation})
+		donation.Status = models.DonationStatusApproved
+		pID := payment.ID.String()
+		donation.TransactionID = &pID
+		if err := donation.Update(ctx); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"donation": donation,
+		})
 	})
 
 	g.GET("/:id/comments", auth.LoginRequired(), paginate(), func(c *gin.Context) {
