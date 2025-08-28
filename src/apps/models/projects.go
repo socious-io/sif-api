@@ -65,6 +65,7 @@ type Project struct {
 	ExpiresAt     *time.Time `db:"expires_at" json:"expires_at"`
 	DeletedAt     *time.Time `db:"deleted_at" json:"deleted_at"`
 	NotEligibleAt *time.Time `db:"not_eligible_at" json:"not_eligible_at"`
+	SearchVector  string     `db:"search_vector"`
 }
 
 func (Project) TableName() string {
@@ -193,7 +194,7 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 		ids       []interface{}
 	)
 
-	var identityID, roundID, category string
+	var identityID, roundID, category, search string
 	for _, filter := range p.Filters {
 		switch filter.Key {
 		case "identity_id", "identity":
@@ -202,6 +203,8 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 			roundID = filter.Value
 		case "category":
 			category = filter.Value
+		case "q":
+			search = filter.Value
 		}
 	}
 
@@ -210,7 +213,7 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 			return nil, 0, err
 		}
 	} else {
-		if err := database.QuerySelect("projects/get_filtered", &fetchList, roundID, category, p.Limit, p.Offet); err != nil {
+		if err := database.QuerySelect("projects/get_filtered", &fetchList, roundID, category, search, p.Limit, p.Offet); err != nil {
 			return nil, 0, err
 		}
 	}

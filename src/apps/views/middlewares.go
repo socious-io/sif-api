@@ -134,17 +134,21 @@ func SecureHeaders(env string) gin.HandlerFunc {
 	}
 }
 
-func SecureRequest(p *bluemonday.Policy) gin.HandlerFunc {
+func SecureRequest() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		//Define bluemonday policy
+		policy := bluemonday.UGCPolicy()
+		policy.AllowDataURIImages()
+
 		// Check content type
 		isUrlEncodedContent := strings.Contains(c.GetHeader("Content-Type"), "application/x-www-form-urlencoded")
 		isMultipartContent := strings.Contains(c.GetHeader("Content-Type"), "multipart/form-data")
 		isJsonContent := strings.Contains(c.GetHeader("Content-Type"), "application/json")
 
 		// --- 1. Sanitize Query Parameters ---
-		q := c.Request.URL.Query()
-		utils.SanitizeURLValues(q, p)
-		c.Request.URL.RawQuery = q.Encode()
+		query := c.Request.URL.Query()
+		utils.SanitizeURLValues(query, policy)
+		c.Request.URL.RawQuery = query.Encode()
 
 		// --- 2. Sanitize Form Data (application/x-www-form-urlencoded or multipart) ---
 		if isUrlEncodedContent || isMultipartContent {
@@ -154,7 +158,7 @@ func SecureRequest(p *bluemonday.Policy) gin.HandlerFunc {
 				})
 				return
 			}
-			utils.SanitizeURLValues(c.Request.PostForm, p)
+			utils.SanitizeURLValues(c.Request.PostForm, policy)
 		} else if isJsonContent {
 			var bodyBytes []byte
 			if c.Request.Body != nil {
@@ -170,7 +174,7 @@ func SecureRequest(p *bluemonday.Policy) gin.HandlerFunc {
 					return
 				}
 
-				utils.SanitizeMap(data, p)
+				utils.SanitizeMap(data, policy)
 				safeBody, _ := json.Marshal(data)
 				c.Request.Body = io.NopCloser(bytes.NewReader(safeBody))
 			}

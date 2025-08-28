@@ -12,7 +12,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/microcosm-cc/bluemonday"
 )
 
 func Init() *gin.Engine {
@@ -58,7 +57,7 @@ func Init() *gin.Engine {
 
 	//Request sanitizer (XSS Attacks prevention)
 	router.Use(views.SecureHeaders(config.Config.Env))
-	router.Use(views.SecureRequest(bluemonday.UGCPolicy()))
+	router.Use(views.SecureRequest())
 
 	views.Init(router)
 
