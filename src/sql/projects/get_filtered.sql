@@ -17,5 +17,5 @@ ORDER BY
          FROM unnest(regexp_split_to_array($3, E'\\s+')) AS word
          WHERE word != '')
     )) END DESC,
-    p.created_at DESC
+    p.created_at ASC
 LIMIT $4 OFFSET $5;
