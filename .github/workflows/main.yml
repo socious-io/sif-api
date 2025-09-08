@@ -18,7 +18,7 @@ jobs:
   test-build-dev:
     name: Test & Build for Development env
     # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ["sif-api-dev"]
+    runs-on: ["undp-dev"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,9 +30,9 @@ jobs:
 
       - name: Copying build & test environment
         run: |
-          cp /etc/sif/config.yml .
-          cp /etc/sif/test.config.yml .
-          cp /etc/sif/gcs-service-account.json .
+          cp /etc/undp-sif-dev/config.yml .
+          cp /etc/undp-sif-dev/test.config.yml .
+          cp /etc/undp-sif-dev/gcs-service-account.json .
 
       - name: Downloading dependencies
         run: |
@@ -92,7 +92,7 @@ jobs:
     needs: [test-build-dev]
     name: Deploy to Dev
     # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ["sif-api-dev"]
+    runs-on: ["undp-dev"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -114,8 +114,8 @@ jobs:
       - name: Docker run
         run: |
           docker pull ${{ steps.meta.outputs.tags }}
-          docker ps -qa --filter "name=sif-api" | grep -q . && docker stop sif-api && docker rm -fv sif-api
-          docker run -d --restart always -p 5066:5066 -h sif-api --network sif_default --name sif-api ${{ steps.meta.outputs.tags }}
+          docker ps -qa --filter "name=undp-sif-api" | grep -q . && docker stop undp-sif-api && docker rm -fv undp-sif-api
+          docker run -d --restart always -p 5066:5066 -h undp-sif-api --network sif_default --name undp-sif-api ${{ steps.meta.outputs.tags }}
 
       # - name: Extract Docker metadata
       #   id: meta-worker
