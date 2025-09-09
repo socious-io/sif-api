@@ -62,7 +62,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     UPDATE users
     SET investments = investments + NEW.amount
-    WHERE id = NEW.user_id AND paid_as='INVESTMENT';
+    WHERE id = NEW.user_id AND NEW.paid_as='INVESTMENT';
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

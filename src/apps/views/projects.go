@@ -10,7 +10,6 @@ import (
 	"sif/src/config"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/martian/v3/log"
 	"github.com/google/uuid"
 	"github.com/socious-io/gopay"
 	database "github.com/socious-io/pkg_database"
@@ -268,7 +267,7 @@ func projectsGroup(router *gin.Engine) {
 		pID := payment.ID.String()
 		donation.TransactionID = &pID
 
-		impactPoints := int(donation.Amount * rate)
+		// impactPoints := int(donation.Amount * rate)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -346,15 +345,15 @@ func projectsGroup(router *gin.Engine) {
 			return
 		}
 
-		vote := &models.Vote{
-			UserID:    user.ID,
-			ProjectID: project.ID,
-		}
-		if err := vote.Create(c.MustGet("ctx").(context.Context)); err != nil {
-			log.Infof("Failed to create vote: %v", err)
-		} else {
-			impactPoints += 1
-		}
+		// vote := &models.Vote{
+		// 	UserID:    user.ID,
+		// 	ProjectID: project.ID,
+		// }
+		// if err := vote.Create(c.MustGet("ctx").(context.Context)); err != nil {
+		// 	log.Infof("Failed to create vote: %v", err)
+		// } else {
+		// 	impactPoints += 1
+		// }
 
 		// go func() {
 		// 	ip := goaccount.ImpactPoint{

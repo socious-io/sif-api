@@ -63,8 +63,8 @@ func (d *Donation) Create(ctx context.Context) error {
 			return err
 		}
 	}
-	return database.Fetch(d, d.ID)
 
+	return database.Fetch(d, d.ID)
 }
 
 func (d *Donation) Update(ctx context.Context) error {
