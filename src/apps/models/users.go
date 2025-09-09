@@ -33,6 +33,7 @@ type User struct {
 
 	ImpactPoints      float32 `db:"impact_points" json:"impact_points"`
 	Donates           float32 `db:"donates" json:"donates"`
+	Investments       float32 `db:"investments" json:"investments"`
 	ProjectsSupported int     `db:"project_supported" json:"project_supported"`
 	StripeCustomerID  *string `db:"stripe_customer_id" json:"stripe_customer_id"`
 

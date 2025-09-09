@@ -18,10 +18,11 @@ type Donation struct {
 
 	ProjectID uuid.UUID `json:"project_id" db:"project_id"`
 
-	Currency  string  `json:"currency" db:"currency"`
-	Amount    float64 `json:"amount" db:"amount"`
-	Rate      float64 `json:"rate" db:"rate"`
-	Anonymous bool    `json:"anonymous" db:"anonymous"`
+	Currency  string             `json:"currency" db:"currency"`
+	Amount    float64            `json:"amount" db:"amount"`
+	Rate      float64            `json:"rate" db:"rate"`
+	Anonymous bool               `json:"anonymous" db:"anonymous"`
+	PaidAs    DonationPaidAsType `json:"paid_as" db:"paid_as"`
 
 	Status               DonationStatus `json:"status" db:"status"`
 	TransactionID        *string        `json:"transaction_id" db:"transaction_id"`
@@ -50,6 +51,7 @@ func (d *Donation) Create(ctx context.Context) error {
 		d.Status,
 		d.Anonymous,
 		d.Rate,
+		d.PaidAs,
 	)
 	if err != nil {
 		return err

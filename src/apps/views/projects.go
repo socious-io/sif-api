@@ -8,12 +8,10 @@ import (
 	"sif/src/apps/models"
 	"sif/src/apps/utils"
 	"sif/src/config"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/martian/v3/log"
 	"github.com/google/uuid"
-	"github.com/socious-io/goaccount"
 	"github.com/socious-io/gopay"
 	database "github.com/socious-io/pkg_database"
 )
@@ -64,30 +62,24 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		if u, ok := c.Get("user"); ok {
-			v, err := models.GetVoteByUserAndProject(u.(*models.User).ID, p.ID)
-			if err == nil && v != nil {
-				p.UserVoted = true
-			}
-		}
 
 		c.JSON(http.StatusOK, p)
 	})
 
 	g.POST("", auth.LoginRequired(), func(c *gin.Context) {
-		ctx, _ := c.Get("ctx")
-		identity, _ := c.Get("identity")
+		ctx, _ := c.MustGet("ctx").(context.Context)
+		identity, _ := c.MustGet("identity").(*models.Identity)
 
-		r, err := models.GetRoundLatestRound()
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		now := time.Now()
-		if !config.Config.Debug && (now.Before(r.SubmissionStartAt) || now.After(r.SubmissionEndAt)) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Submission period is closed"})
-			return
-		}
+		// r, err := models.GetRoundLatestRound()
+		// if err != nil {
+		// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		// 	return
+		// }
+		// now := time.Now()
+		// if !config.Config.Debug && (now.Before(r.SubmissionStartAt) || now.After(r.SubmissionEndAt)) {
+		// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Submission period is closed"})
+		// 	return
+		// }
 
 		form := new(ProjectForm)
 		if err := c.ShouldBindJSON(form); err != nil {
@@ -96,11 +88,11 @@ func projectsGroup(router *gin.Engine) {
 		}
 		p := new(models.Project)
 		utils.Copy(form, p)
-		p.IdentityID = identity.(*models.Identity).ID
+		p.IdentityID = identity.ID
 		if form.Status == nil {
 			p.Status = models.ProjectStatusActive
 		}
-		if err := p.Create(ctx.(context.Context)); err != nil {
+		if err := p.Create(ctx); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -108,38 +100,28 @@ func projectsGroup(router *gin.Engine) {
 	})
 
 	g.PATCH("/:id", auth.LoginRequired(), func(c *gin.Context) {
-		ctx, _ := c.Get("ctx")
-		id := c.Param("id")
+		ctx, _ := c.MustGet("ctx").(context.Context)
+		identity := c.MustGet("identity").(*models.Identity)
+		id := uuid.MustParse(c.Param("id"))
 
 		form := new(ProjectForm)
 		if err := c.ShouldBindJSON(form); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		p, err := models.GetProject(uuid.MustParse(id))
+		p, err := models.GetProject(id)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		if p.IdentityID != c.MustGet("identity").(*models.Identity).ID {
+		if p.IdentityID != identity.ID {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 			return
 		}
 
-		r, err := models.GetRound(p.RoundID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		now := time.Now()
-		if !config.Config.Debug && (now.Before(r.SubmissionStartAt) || now.After(r.SubmissionEndAt)) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Submission period is closed"})
-			return
-		}
-
 		utils.Copy(form, p)
-		p.ID = uuid.MustParse(id)
-		if err := p.Update(ctx.(context.Context)); err != nil {
+		p.ID = id
+		if err := p.Update(ctx); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -147,32 +129,22 @@ func projectsGroup(router *gin.Engine) {
 	})
 
 	g.DELETE("/:id", auth.LoginRequired(), OrganizationRequired(), func(c *gin.Context) {
-		ctx, _ := c.Get("ctx")
-		id := c.Param("id")
+		ctx, _ := c.MustGet("ctx").(context.Context)
+		identity := c.MustGet("identity").(*models.Identity)
+		id := uuid.MustParse(c.Param("id"))
 
-		p, err := models.GetProject(uuid.MustParse(id))
+		p, err := models.GetProject(id)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		if p.IdentityID != c.MustGet("identity").(*models.Identity).ID {
+		if p.IdentityID != identity.ID {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 			return
 		}
 
-		r, err := models.GetRound(p.RoundID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		now := time.Now()
-		if !config.Config.Debug && (now.Before(r.SubmissionStartAt) || now.After(r.SubmissionEndAt)) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Submission period is closed"})
-			return
-		}
-
-		if err := p.Delete(ctx.(context.Context)); err != nil {
+		if err := p.Delete(ctx); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -181,69 +153,71 @@ func projectsGroup(router *gin.Engine) {
 		})
 	})
 
-	g.POST("/:id/votes", auth.LoginRequired(), func(c *gin.Context) {
-		user := c.MustGet("user").(*models.User)
-		// Allow people vote and donate without verify
-		/* if user.IdentityVerifiedAt == nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "You must verify your identity before voting"})
-			return
-		} */
+	// g.POST("/:id/votes", auth.LoginRequired(), func(c *gin.Context) {
+	// 	user := c.MustGet("user").(*models.User)
+	// 	// Allow people vote and donate without verify
+	// 	/* if user.IdentityVerifiedAt == nil {
+	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "You must verify your identity before voting"})
+	// 		return
+	// 	} */
 
-		project, err := models.GetProject(uuid.MustParse(c.Param("id")))
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
+	// 	project, err := models.GetProject(uuid.MustParse(c.Param("id")))
+	// 	if err != nil {
+	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 		return
+	// 	}
 
-		now := time.Now()
-		if !config.Config.Debug && (now.Before(project.Round.VotingStartAt) || now.After(project.Round.VotingEndAt)) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "voting period is closed"})
-			return
-		}
+	// 	now := time.Now()
+	// 	if !config.Config.Debug && (now.Before(project.Round.VotingStartAt) || now.After(project.Round.VotingEndAt)) {
+	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "voting period is closed"})
+	// 		return
+	// 	}
 
-		vote := &models.Vote{
-			UserID:    user.ID,
-			ProjectID: project.ID,
-		}
-		if err := vote.Create(c.MustGet("ctx").(context.Context)); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "already voted"})
-			return
-		}
+	// 	vote := &models.Vote{
+	// 		UserID:    user.ID,
+	// 		ProjectID: project.ID,
+	// 	}
+	// 	if err := vote.Create(c.MustGet("ctx").(context.Context)); err != nil {
+	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "already voted"})
+	// 		return
+	// 	}
 
-		go func() {
-			ip := goaccount.ImpactPoint{
-				UserID:              user.ID,
-				SocialCause:         project.SocialCause,
-				SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
-				TotalPoints:         1,
-				Type:                "VOTING",
-				UniqueTag:           vote.ID.String(),
-				Value:               float64(0),
-				Meta: map[string]any{
-					"vote": vote,
-				},
-			}
-			if err := ip.AddImpactPoint(); err != nil {
-				log.Errorf("Failed to add impact point: %v", err)
-			}
+	// 	go func() {
+	// 		ip := goaccount.ImpactPoint{
+	// 			UserID:              user.ID,
+	// 			SocialCause:         project.SocialCause,
+	// 			SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
+	// 			TotalPoints:         1,
+	// 			Type:                "VOTING",
+	// 			UniqueTag:           vote.ID.String(),
+	// 			Value:               float64(0),
+	// 			Meta: map[string]any{
+	// 				"vote": vote,
+	// 			},
+	// 		}
+	// 		if err := ip.AddImpactPoint(); err != nil {
+	// 			log.Errorf("Failed to add impact point: %v", err)
+	// 		}
 
-			ra := goaccount.ReferralAchievement{
-				RefereeID:       user.ID,
-				AchievementType: "VOTE",
-				Meta: map[string]any{
-					"vote": vote,
-				},
-			}
-			if err := ra.AddReferralAchievement(); err != nil {
-				log.Errorf("Failed to add achievement: %v", err)
-			}
-		}()
+	// 		ra := goaccount.ReferralAchievement{
+	// 			RefereeID:       user.ID,
+	// 			AchievementType: "VOTE",
+	// 			Meta: map[string]any{
+	// 				"vote": vote,
+	// 			},
+	// 		}
+	// 		if err := ra.AddReferralAchievement(); err != nil {
+	// 			log.Errorf("Failed to add achievement: %v", err)
+	// 		}
+	// 	}()
 
-		c.JSON(http.StatusCreated, gin.H{"vote": vote})
-	})
+	// 	c.JSON(http.StatusCreated, gin.H{"vote": vote})
+	// })
 
 	g.POST("/:id/donates", auth.LoginRequired(), func(c *gin.Context) {
 		user := c.MustGet("user").(*models.User)
+		ctx, _ := c.MustGet("ctx").(context.Context)
+		id := uuid.MustParse(c.Param("id"))
 		// Allow people vote and donate without verify
 		/* if user.IdentityVerifiedAt == nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "You must verify your identity before donating"})
@@ -255,7 +229,7 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		project, err := models.GetProject(uuid.MustParse(c.Param("id")))
+		project, err := models.GetProject(id)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -274,9 +248,10 @@ func projectsGroup(router *gin.Engine) {
 			Status:    models.DonationStatusPending,
 			Rate:      rate,
 			Anonymous: form.Anonymous,
+			PaidAs:    form.PaidAs,
 		}
 
-		if err := donation.Create(c.MustGet("ctx").(context.Context)); err != nil {
+		if err := donation.Create(ctx); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -371,37 +346,33 @@ func projectsGroup(router *gin.Engine) {
 			return
 		}
 
-		now := time.Now()
-		if now.After(project.Round.VotingStartAt) && now.Before(project.Round.VotingEndAt) {
-			vote := &models.Vote{
-				UserID:    user.ID,
-				ProjectID: project.ID,
-			}
-			if err := vote.Create(c.MustGet("ctx").(context.Context)); err != nil {
-				log.Infof("Failed to create vote: %v", err)
-			} else {
-				impactPoints += 1
-			}
-
+		vote := &models.Vote{
+			UserID:    user.ID,
+			ProjectID: project.ID,
+		}
+		if err := vote.Create(c.MustGet("ctx").(context.Context)); err != nil {
+			log.Infof("Failed to create vote: %v", err)
+		} else {
+			impactPoints += 1
 		}
 
-		go func() {
-			ip := goaccount.ImpactPoint{
-				UserID:              user.ID,
-				SocialCause:         project.SocialCause,
-				SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
-				TotalPoints:         impactPoints,
-				Type:                "DONATION",
-				UniqueTag:           donation.ID.String(),
-				Value:               float64(impactPoints),
-				Meta: map[string]any{
-					"donation": donation,
-				},
-			}
-			if err := ip.AddImpactPoint(); err != nil {
-				log.Errorf("Failed to add impact point: %v", err)
-			}
-		}()
+		// go func() {
+		// 	ip := goaccount.ImpactPoint{
+		// 		UserID:              user.ID,
+		// 		SocialCause:         project.SocialCause,
+		// 		SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
+		// 		TotalPoints:         impactPoints,
+		// 		Type:                "DONATION",
+		// 		UniqueTag:           donation.ID.String(),
+		// 		Value:               float64(impactPoints),
+		// 		Meta: map[string]any{
+		// 			"donation": donation,
+		// 		},
+		// 	}
+		// 	if err := ip.AddImpactPoint(); err != nil {
+		// 		log.Errorf("Failed to add impact point: %v", err)
+		// 	}
+		// }()
 
 		c.JSON(http.StatusCreated, gin.H{"donation": donation})
 	})

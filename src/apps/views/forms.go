@@ -2,34 +2,23 @@ package views
 
 import (
 	"sif/src/apps/models"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 type ProjectForm struct {
-	Title                 string                `json:"title" validate:"required"`
-	Description           string                `json:"description" validate:"required"`
-	Status                *models.ProjectStatus `json:"status"`
-	City                  string                `json:"city"`
-	Country               string                `json:"country"`
-	SocialCause           string                `json:"social_cause" validate:"required"`
-	CoverID               *uuid.UUID            `json:"cover_id"`
-	WalletAddress         string                `json:"wallet_address" validate:"required"`
-	WalletEnv             string                `json:"wallet_env"`
-	Website               string                `json:"website"`
-	LinkedIn              *string               `json:"linkedin,omitempty"`
-	Video                 *string               `json:"video,omitempty"`
-	ProblemStatement      *string               `json:"problem_statement,omitempty"`
-	Solution              *string               `json:"solution,omitempty"`
-	Goals                 *string               `json:"goals,omitempty"`
-	TotalRequestedAmount  *float64              `json:"total_requested_amount,omitempty"`
-	CostBreakdown         *string               `json:"cost_breakdown,omitempty"`
-	ImpactAssessment      *string               `json:"impact_assessment,omitempty"`
-	ImpactAssessmentType  *string               `json:"impact_assessment_type"`
-	VoluntaryContribution *string               `json:"voluntery_contribution,omitempty"`
-	Feasibility           *string               `json:"feasibility,omitempty"`
-	Category              *string               `json:"category,omitempty"`
-	Email                 string                `json:"email" validate:"required,email"`
+	Title                string                `json:"title" validate:"required"`
+	Description          string                `json:"description" validate:"required"`
+	Status               *models.ProjectStatus `json:"status"`
+	CoverID              *uuid.UUID            `json:"cover_id"`
+	TotalRequestedAmount float64               `json:"total_requested_amount"`
+	SchoolName           string                `json:"school_name"`
+	SchoolSize           int                   `json:"school_size"`
+	Kpw                  float64               `json:"kpw"` // kWp capacity
+	KwhPerYear           float64               `json:"kwh_per_year"`
+	Co2PerYear           float64               `json:"co2_per_year"`
+	ExpiresAt            time.Time             `json:"expires_at,omitempty"`
 }
 
 type AuthForm struct {
@@ -53,16 +42,17 @@ type ApikeyForm struct {
 }
 
 type DnateDepositForm struct {
-	PaymentType   models.PaymentType `json:"payment_type"`
-	WalletAddress string             `json:"wallet_address" validate:"required"`
-	Currency      string             `json:"currency" validate:"required"`
-	Rate          float64            `json:"rate"`
-	Description   string             `json:"description"`
-	Amount        float64            `json:"amount" validate:"required"`
-	TxID          string             `json:"txid" validate:"required"`
-	Meta          interface{}        `json:"meta" validate:"required"`
-	CardToken     *string            `json:"card_token"`
-	Anonymous     bool               `json:"anonymous"`
+	PaymentType   models.PaymentType        `json:"payment_type"`
+	WalletAddress string                    `json:"wallet_address" validate:"required"`
+	Currency      string                    `json:"currency" validate:"required"`
+	Rate          float64                   `json:"rate"`
+	Description   string                    `json:"description"`
+	Amount        float64                   `json:"amount" validate:"required"`
+	TxID          string                    `json:"txid" validate:"required"`
+	Meta          interface{}               `json:"meta" validate:"required"`
+	CardToken     *string                   `json:"card_token"`
+	Anonymous     bool                      `json:"anonymous"`
+	PaidAs        models.DonationPaidAsType `json:"paid_as"`
 }
 
 type DonateDepositConfirmForm struct {

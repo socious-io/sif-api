@@ -16,6 +16,7 @@ type (
 	PaymentType               string
 	ProjectCategory           string
 	ImpactAssessmentType      string
+	DonationPaidAsType        string
 )
 
 const (
@@ -52,6 +53,9 @@ const (
 
 	OptionA ImpactAssessmentType = "OPTION_A"
 	OptionB ImpactAssessmentType = "OPTION_B"
+
+	DonationPaidAsDonation   DonationPaidAsType = "DONATION"
+	DonationPaidAsInvestment DonationPaidAsType = "INVESTMENT"
 )
 
 // ------------------------------------------------------

@@ -1,37 +1,13 @@
 INSERT INTO projects (
-    title,
-    description,
-    status,
-    city,
-    country,
-    social_cause,
-    identity_id,
-    cover_id,
-    wallet_address,
-    wallet_env,
-    website,
-    linkedin,
-    video,
-    problem_statement,
-    solution,
-    goals,
-    total_requested_amount,
-    cost_beakdown,
-    impact_assessment,
-    impact_assessment_type,
-    voluntery_contribution,
-    feasibility,
-    category,
-    email
+    identity_id, title, description,
+    status, cover_id, total_requested_amount,
+    school_name, school_size, kpw,
+    kwh_per_year, co2_per_year, expires_at
 )
 VALUES (
-    $1, $2, $3, 
-    $4, $5, $6,
+    $1, $2, $3,
+    $4, $5, $6, 
     $7, $8, $9,
-    $10, $11, $12,
-    $13, $14, $15,
-    $16, $17, $18,
-    $19, $20, $21,
-    $22, $23, $24
+    $10, $11, $12
 )
 RETURNING *

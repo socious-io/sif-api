@@ -55,13 +55,3 @@ func GetMedia(id uuid.UUID) (*Media, error) {
 	}
 	return m, nil
 }
-
-func getAllMedia() ([]Media, error) {
-	result := []Media{}
-	return result, nil
-}
-
-func getManyMedia() ([]Media, error) {
-	result := []Media{}
-	return result, nil
-}

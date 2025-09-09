@@ -10,6 +10,29 @@ import (
 	"github.com/jmoiron/sqlx/types"
 )
 
+/*
+export interface Project {
+  id: string;
+  title: string;
+  description: string;
+  status: ProjectStatus;
+  identity: Identity;
+  cover: Media;
+  total_donations: { [currency: string]: number };
+  total_investments: { [currency: string]: number };
+  school_name: string;
+  school_size: number;
+  kpw: number;
+  kwh_per_year: number;
+  co2_per_year: number;
+  target_amount: number;
+  created_at: Date;
+  updated_at: Date;
+  expires_at: Date;
+  deleted_at: Date;
+}
+*/
+
 type Project struct {
 	ID uuid.UUID `db:"id" json:"id"`
 
@@ -17,12 +40,6 @@ type Project struct {
 	Description *string `db:"description" json:"description"`
 
 	Status ProjectStatus `db:"status" json:"status"`
-
-	City    *string `db:"city" json:"city"`
-	Country *string `db:"country" json:"country"`
-	Website *string `db:"website" json:"website"`
-
-	SocialCause string `db:"social_cause" json:"social_cause"`
 
 	IdentityID   uuid.UUID      `db:"identity_id" json:"-"`
 	Identity     *Identity      `db:"-" json:"identity"`
@@ -32,40 +49,25 @@ type Project struct {
 	Cover     *Media         `db:"-" json:"cover"`
 	CoverJson types.JSONText `db:"cover" json:"-"`
 
-	RoundID   uuid.UUID      `db:"round_id" json:"-"`
-	Round     *Round         `db:"-" json:"round"`
-	RoundJson types.JSONText `db:"round" json:"-"`
+	TotalDonations   types.JSONText `db:"total_donations" json:"total_donations"`
+	TotalInvestments types.JSONText `db:"total_investments" json:"total_investments"`
 
-	TotalVotes     int            `db:"total_votes" json:"total_votes"`
-	TotalDonations types.JSONText `db:"total_donations" json:"total_donations"`
-	// TotalDonations float64 `db:"total_donations" json:"total_donations"`
+	TotalRequestedAmount float64 `db:"total_requested_amount" json:"total_requested_amount"`
 
-	WalletAddress string    `db:"wallet_address" json:"wallet_address"`
-	WalletEnv     WalletENV `db:"wallet_env" json:"wallet_env"`
+	//Specifics What about others?
+	SchoolName string  `db:"school_name" json:"school_name"`
+	SchoolSize int     `db:"school_size" json:"school_size"`   //-> isn't this number or enum? (optional?)
+	Kpw        float64 `db:"kpw" json:"kpw"`                   //-> isn't this number? (optional?)
+	KwhPerYear float64 `db:"kwh_per_year" json:"kwh_per_year"` //-> isn't this number? (optional?)
+	Co2PerYear float64 `db:"co2_per_year" json:"co2_per_year"` //-> isn't this number? (optional?)
+	// TargetAmount string `db:"target_amount" json:"targetAmount"` //-> isn't this number? (optional?) -> use TotalRequestedAmount
 
-	LinkedIn              *string               `db:"linkedin" json:"linkedin"`
-	Video                 *string               `db:"video" json:"video"`
-	ProblemStatement      *string               `db:"problem_statement" json:"problem_statement"`
-	Solution              *string               `db:"solution" json:"solution"`
-	Goals                 *string               `db:"goals" json:"goals"`
-	TotalRequestedAmount  float64               `db:"total_requested_amount" json:"total_requested_amount"`
-	CostBreakdown         *string               `db:"cost_beakdown" json:"cost_breakdown"`
-	ImpactAssessment      *string               `db:"impact_assessment" json:"impact_assessment"`
-	ImpactAssessmentType  *ImpactAssessmentType `db:"impact_assessment_type" json:"impact_assessment_type"`
-	VoluntaryContribution *string               `db:"voluntery_contribution" json:"voluntery_contribution"`
-	Feasibility           *string               `db:"feasibility" json:"feasibility"`
-	Email                 *string               `db:"email" json:"email"`
+	CreatedAt time.Time  `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time  `db:"updated_at" json:"updated_at"`
+	ExpiresAt time.Time  `db:"expires_at" json:"expires_at"`
+	DeletedAt *time.Time `db:"deleted_at" json:"deleted_at"`
 
-	Category ProjectCategory `db:"category" json:"category"`
-
-	UserVoted bool `db:"-" json:"user_voted"`
-
-	CreatedAt     time.Time  `db:"created_at" json:"created_at"`
-	UpdatedAt     time.Time  `db:"updated_at" json:"updated_at"`
-	ExpiresAt     *time.Time `db:"expires_at" json:"expires_at"`
-	DeletedAt     *time.Time `db:"deleted_at" json:"deleted_at"`
-	NotEligibleAt *time.Time `db:"not_eligible_at" json:"not_eligible_at"`
-	SearchVector  string     `db:"search_vector"`
+	SearchVector string `db:"search_vector"`
 }
 
 func (Project) TableName() string {
@@ -97,30 +99,18 @@ func (p *Project) Create(ctx context.Context) error {
 	rows, err := database.Query(
 		ctx,
 		"projects/create",
+		p.IdentityID,
 		p.Title,
 		p.Description,
 		p.Status,
-		p.City,
-		p.Country,
-		p.SocialCause,
-		p.IdentityID,
 		p.CoverID,
-		p.WalletAddress,
-		p.WalletEnv,
-		p.Website,
-		p.LinkedIn,
-		p.Video,
-		p.ProblemStatement,
-		p.Solution,
-		p.Goals,
 		p.TotalRequestedAmount,
-		p.CostBreakdown,
-		p.ImpactAssessment,
-		p.ImpactAssessmentType,
-		p.VoluntaryContribution,
-		p.Feasibility,
-		p.Category,
-		p.Email,
+		p.SchoolName,
+		p.SchoolSize,
+		p.Kpw,
+		p.KwhPerYear,
+		p.Co2PerYear,
+		p.ExpiresAt,
 	)
 	if err != nil {
 		return err
@@ -144,26 +134,14 @@ func (p *Project) Update(ctx context.Context) error {
 		p.Title,
 		p.Description,
 		p.Status,
-		p.City,
-		p.Country,
-		p.SocialCause,
 		p.CoverID,
-		p.WalletAddress,
-		p.WalletEnv,
-		p.Website,
-		p.LinkedIn,
-		p.Video,
-		p.ProblemStatement,
-		p.Solution,
-		p.Goals,
 		p.TotalRequestedAmount,
-		p.CostBreakdown,
-		p.ImpactAssessment,
-		p.ImpactAssessmentType,
-		p.VoluntaryContribution,
-		p.Feasibility,
-		p.Category,
-		p.Email,
+		p.SchoolName,
+		p.SchoolSize,
+		p.Kpw,
+		p.KwhPerYear,
+		p.Co2PerYear,
+		p.ExpiresAt,
 	)
 
 	if err != nil {
@@ -194,28 +172,16 @@ func GetProjects(p database.Paginate) ([]Project, int, error) {
 		ids       []interface{}
 	)
 
-	var identityID, roundID, category, search string
+	search := ""
 	for _, filter := range p.Filters {
 		switch filter.Key {
-		case "identity_id", "identity":
-			identityID = filter.Value
-		case "round_id":
-			roundID = filter.Value
-		case "category":
-			category = filter.Value
 		case "q":
 			search = filter.Value
 		}
 	}
 
-	if identityID != "" {
-		if err := database.QuerySelect("projects/get_by_identity", &fetchList, identityID, p.Limit, p.Offet); err != nil {
-			return nil, 0, err
-		}
-	} else {
-		if err := database.QuerySelect("projects/get_filtered", &fetchList, roundID, category, search, p.Limit, p.Offet); err != nil {
-			return nil, 0, err
-		}
+	if err := database.QuerySelect("projects/get_filtered", &fetchList, search, p.Limit, p.Offet); err != nil {
+		return nil, 0, err
 	}
 
 	if len(fetchList) == 0 {
