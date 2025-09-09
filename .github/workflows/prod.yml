@@ -72,21 +72,21 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      # - name: Extract Worker Docker metadata
-      #   id: meta-worker
-      #   uses: docker/metadata-action@v5.5.1
-      #   with:
-      #     images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME }}
+      - name: Extract Worker Docker metadata
+        id: meta-worker
+        uses: docker/metadata-action@v5.5.1
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME }}
 
-      # - name: Build and push Worker Docker image
-      #   id: build-and-push-worker
-      #   uses: docker/build-push-action@v6.7.0
-      #   with:
-      #     context: .
-      #     file: "./Worker.Dockerfile"
-      #     push: ${{ github.event_name != 'pull_request' }}
-      #     tags: ${{ steps.meta-worker.outputs.tags }}
-      #     labels: ${{ steps.meta-worker.outputs.labels }}
+      - name: Build and push Worker Docker image
+        id: build-and-push-worker
+        uses: docker/build-push-action@v6.7.0
+        with:
+          context: .
+          file: "./Worker.Dockerfile"
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-worker.outputs.tags }}
+          labels: ${{ steps.meta-worker.outputs.labels }}
 
   deploy-dev:
     needs: [test-build]
@@ -117,14 +117,14 @@ jobs:
           docker ps -qa --filter "name=sif-api" | grep -q . && docker stop sif-api && docker rm -fv sif-api
           docker run -d --restart always -p 5066:5066 -h sif-api --network sif_default --name sif-api ${{ steps.meta.outputs.tags }}
 
-      # - name: Extract Docker metadata
-      #   id: meta-worker
-      #   uses: docker/metadata-action@v5.5.1
-      #   with:
-      #     images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME }}
+      - name: Extract Docker metadata
+        id: meta-worker
+        uses: docker/metadata-action@v5.5.1
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME }}
 
-      # - name: Docker run worker
-      #   run: |
-      #     docker pull ${{ steps.meta-worker.outputs.tags }}
-      #     docker ps -qa --filter "name=socious-api-v3-worker" | grep -q . && docker stop socious-api-v3-worker && docker rm -fv socious-api-v3-worker
-      #     docker run -d --restart always -h socious-api-v3-worker --network sociousapiv3_default --name socious-api-v3-worker ${{ steps.meta-worker.outputs.tags }}
+      - name: Docker run worker
+        run: |
+          docker pull ${{ steps.meta-worker.outputs.tags }}
+          docker ps -qa --filter "name=sif-api-worker" | grep -q . && docker stop sif-api-worker && docker rm -fv sif-api-worker
+          docker run -d --restart always -h sif-api-worker --network sif_default --name sif-api-worker ${{ steps.meta-worker.outputs.tags }}
