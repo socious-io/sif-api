@@ -115,7 +115,7 @@ jobs:
         run: |
           docker pull ${{ steps.meta.outputs.tags }}
           docker ps -qa --filter "name=undp-sif-api" | grep -q . && docker stop undp-sif-api && docker rm -fv undp-sif-api
-          docker run -d --restart always -p 5066:5066 -h undp-sif-api --network sif_default --name undp-sif-api ${{ steps.meta.outputs.tags }}
+          docker run -d --restart always -p 5066:5066 -h undp-sif-api --network undp_default --name undp-sif-api ${{ steps.meta.outputs.tags }}
 
       # - name: Extract Docker metadata
       #   id: meta-worker
