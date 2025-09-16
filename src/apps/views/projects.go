@@ -281,13 +281,17 @@ func projectsGroup(router *gin.Engine) {
 			return
 		}
 
+		currency := gopay.USD
+		if form.PaymentType == models.Fiat {
+			currency = gopay.Currency(form.Currency)
+		}
 		//Start a payment session
 		payment, err := gopay.New(gopay.PaymentParams{
 			Tag:         fmt.Sprintf("Donation-%s-%s", *project.Title, user.Username),
 			Description: form.Description,
 			Ref:         donation.ID.String(),
 			Type:        gopay.CRYPTO,
-			Currency:    gopay.Currency(form.Currency),
+			Currency:    currency,
 			TotalAmount: donation.Amount,
 		})
 
@@ -303,8 +307,6 @@ func projectsGroup(router *gin.Engine) {
 
 		if form.PaymentType == models.Fiat {
 			fiatService := config.Config.Payment.Fiats[0]
-
-			payment.Currency = gopay.Currency(form.Currency)
 			payment.SetToFiatMode(fiatService.Name)
 			if form.CardToken == nil && user.StripeCustomerID == nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "payment source card could not be found"})
