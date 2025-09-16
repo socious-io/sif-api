@@ -287,7 +287,7 @@ func projectsGroup(router *gin.Engine) {
 			Description: form.Description,
 			Ref:         donation.ID.String(),
 			Type:        gopay.CRYPTO,
-			Currency:    gopay.USD,
+			Currency:    gopay.Currency(form.Currency),
 			TotalAmount: donation.Amount,
 		})
 		pID := payment.ID.String()
