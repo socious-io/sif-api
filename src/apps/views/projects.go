@@ -290,15 +290,17 @@ func projectsGroup(router *gin.Engine) {
 			Currency:    gopay.Currency(form.Currency),
 			TotalAmount: donation.Amount,
 		})
-		pID := payment.ID.String()
-		donation.TransactionID = &pID
-
-		impactPoints := int(donation.Amount * rate)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+
+		pID := payment.ID.String()
+		donation.TransactionID = &pID
+
+		impactPoints := int(donation.Amount * rate)
+
 		if form.PaymentType == models.Fiat {
 			fiatService := config.Config.Payment.Fiats[0]
 
