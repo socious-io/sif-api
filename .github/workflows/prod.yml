@@ -18,7 +18,7 @@ jobs:
   test-build:
     name: Test & Build for Production env
     # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ["sif-api-prod"]
+    runs-on: ["socious-runner"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -92,7 +92,7 @@ jobs:
     needs: [test-build]
     name: Deploy to Prod
     # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ["sif-api-prod"]
+    runs-on: ["socious-runner"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
