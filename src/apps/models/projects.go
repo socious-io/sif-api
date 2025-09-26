@@ -91,6 +91,9 @@ type ProjectPreview struct {
 	CoverID   *uuid.UUID     `db:"cover_id" json:"cover_id"`
 	Cover     *Media         `db:"-" json:"cover"`
 	CoverJson types.JSONText `db:"cover" json:"-"`
+
+	TotalRequestedAmount float64        `db:"total_requested_amount" json:"total_requested_amount"`
+	TotalDonations       types.JSONText `db:"total_donations" json:"total_donations"`
 }
 
 func (p *Project) Create(ctx context.Context) error {
