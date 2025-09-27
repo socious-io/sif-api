@@ -17,6 +17,12 @@ services:
       - '5432:5432'
     restart: 'always'
 
+  nats:
+    image: nats:latest
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+
 networks:
   default:
     driver: bridge
