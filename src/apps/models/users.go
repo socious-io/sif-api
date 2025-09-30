@@ -43,6 +43,8 @@ type User struct {
 	CreatedAt          time.Time  `db:"created_at" json:"created_at"`
 	UpdatedAt          time.Time  `db:"updated_at" json:"updated_at"`
 	DeletedAt          *time.Time `db:"deleted_at" json:"deleted_at"`
+
+	Role UserRoleType `db:"role" json:"role"`
 }
 
 func (User) TableName() string {
@@ -113,6 +115,40 @@ func GetUserByEmail(email string) (*User, error) {
 func GetUserByUsername(username string) (*User, error) {
 	u := new(User)
 	if err := database.Get(u, "users/fetch_by_username", username); err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+func GetAllUsers(p database.Paginate) ([]User, int, error) {
+	var (
+		users     []User
+		fetchList []database.FetchList
+		ids       []interface{}
+	)
+
+	if err := database.QuerySelect("users/fetch_all", &fetchList, p.Limit, p.Offet); err != nil {
+		return nil, 0, err
+	}
+
+	if len(fetchList) == 0 {
+		return users, 0, nil
+	}
+
+	for _, f := range fetchList {
+		ids = append(ids, f.ID)
+	}
+
+	if err := database.Fetch(&users, ids...); err != nil {
+		return nil, 0, err
+	}
+
+	return users, fetchList[0].TotalCount, nil
+}
+
+func UpdateUserRole(id uuid.UUID, role string) (*User, error) {
+	u := new(User)
+	if err := database.Get(u, "users/update_role", id, role); err != nil {
 		return nil, err
 	}
 	return u, nil

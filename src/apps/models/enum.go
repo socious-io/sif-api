@@ -17,6 +17,7 @@ type (
 	ProjectCategory           string
 	ImpactAssessmentType      string
 	DonationPaidAsType        string
+	UserRoleType              string
 )
 
 const (
@@ -56,6 +57,13 @@ const (
 
 	DonationPaidAsDonation   DonationPaidAsType = "DONATION"
 	DonationPaidAsInvestment DonationPaidAsType = "INVESTMENT"
+
+	RolePublic  UserRoleType = "PUBLIC"
+	RoleAdmin UserRoleType = "ADMIN"
+	RoleSchool UserRoleType = "SCHOOL"
+	RoleCEB UserRoleType = "CEB"
+	RoleInstaller UserRoleType = "INSTALLER"
+	RoleGovernment UserRoleType = "GOVERNMENT"
 )
 
 // ------------------------------------------------------
@@ -165,6 +173,14 @@ func (iat ImpactAssessmentType) Value() (driver.Value, error) {
 	return string(iat), nil
 }
 
+// ----------------------------------------------------------
+func (ur *UserRoleType) Scan(value interface{}) error {
+	return scanEnum(value, (*string)(ur))
+}
+
+func (ur UserRoleType) Value() (driver.Value, error) {
+	return string(ur), nil
+}
 // ----------------------------------------------------------
 
 // scanEnum is a helper function that converts an interface{} value to a string

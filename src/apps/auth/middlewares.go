@@ -122,3 +122,25 @@ func LoginOptional() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func AdminOnly() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userI, exists := c.Get("user")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found in context"})
+			c.Abort()
+			return
+		}
+
+		user := userI.(*models.User)
+
+		if user.Role != "ADMIN" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Only admins can perform this action"})
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
+}
+
