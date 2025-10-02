@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
+	"flag"
 	"fmt"
 	"log"
 	"regexp"
@@ -31,6 +32,7 @@ type ProjectTextFields struct {
 }
 
 var (
+	configPath       = flag.String("c", "config.yml", "Path to the configuration file")
 	base64ImageRegex = regexp.MustCompile(`<img[^>]*src="data:image/(png|jpg|jpeg|gif|webp);base64,([^"]+)"[^>]*>`)
 	processedCount   = 0
 	uploadedCount    = 0
@@ -41,7 +43,7 @@ func main() {
 	log.Println("Starting base64 image fix process...")
 
 	// Initialize config
-	conf, err := config.Init("../../config.yml")
+	conf, err := config.Init(*configPath)
 	if err != nil {
 		log.Fatalf("Failed to initialize config: %v", err)
 	}
@@ -68,7 +70,7 @@ func main() {
 		log.Fatalf("Failed to process projects: %v", err)
 	}
 
-	log.Printf("Process completed! Processed: %d, Uploaded: %d, Errors: %d\n", 
+	log.Printf("Process completed! Processed: %d, Uploaded: %d, Errors: %d\n",
 		processedCount, uploadedCount, errorCount)
 }
 
@@ -106,7 +108,7 @@ func processProjects(uploader *utils.GCSUploader) error {
 
 func processProject(ctx context.Context, db *sqlx.DB, project *ProjectTextFields, uploader *utils.GCSUploader) error {
 	updated := false
-	
+
 	// Process each text field
 	fields := []struct {
 		name  string
@@ -158,7 +160,7 @@ func processTextField(ctx context.Context, content string, projectID uuid.UUID, 
 	}
 
 	log.Printf("Found %d base64 images in %s for project %s\n", len(matches), fieldName, projectID)
-	
+
 	newContent := content
 	for i, match := range matches {
 		fullMatch := match[0]
@@ -179,7 +181,7 @@ func processTextField(ctx context.Context, content string, projectID uuid.UUID, 
 		// Upload to CDN
 		reader := bytes.NewReader(imageData)
 		contentType := fmt.Sprintf("image/%s", imageType)
-		
+
 		cdnURL, err := uploader.UploadFile(ctx, fileName, contentType, reader)
 		if err != nil {
 			log.Printf("Failed to upload image: %v\n", err)
@@ -190,7 +192,7 @@ func processTextField(ctx context.Context, content string, projectID uuid.UUID, 
 		newImgTag := fmt.Sprintf(`<img src="%s">`, cdnURL)
 		newContent = strings.Replace(newContent, fullMatch, newImgTag, 1)
 		uploadedCount++
-		
+
 		log.Printf("Uploaded image %d/%d to: %s\n", i+1, len(matches), cdnURL)
 	}
 
@@ -212,7 +214,7 @@ func updateProject(db *sqlx.DB, project *ProjectTextFields) error {
 		WHERE id = $1
 	`
 
-	_, err := db.Exec(query, 
+	_, err := db.Exec(query,
 		project.ID,
 		project.Description,
 		project.ProblemStatement,
