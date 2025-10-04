@@ -29,4 +29,4 @@ EXECUTE FUNCTION update_projects_search_vector();
 
 CREATE INDEX IF NOT EXISTS idx_projects_search_vector ON projects USING GIN(search_vector);
 
-UPDATE projects SET title = title;
+UPDATE projects SET id= id;
