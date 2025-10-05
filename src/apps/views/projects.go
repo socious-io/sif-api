@@ -385,8 +385,20 @@ func projectsGroup(router *gin.Engine) {
 				log.Infof("Failed to create vote: %v", err)
 			} else {
 				impactPoints += 1
-			}
 
+				go func() {
+					ra := goaccount.ReferralAchievement{
+						RefereeID:       user.ID,
+						AchievementType: "VOTE",
+						Meta: map[string]any{
+							"vote": vote,
+						},
+					}
+					if err := ra.AddReferralAchievement(); err != nil {
+						log.Errorf("Failed to add achievement: %v", err)
+					}
+				}()
+			}
 		}
 
 		go func() {
@@ -482,6 +494,19 @@ func projectsGroup(router *gin.Engine) {
 				log.Infof("Failed to create vote: %v", err)
 			} else {
 				impactPoints += 1
+
+				go func() {
+					ra := goaccount.ReferralAchievement{
+						RefereeID:       user.ID,
+						AchievementType: "VOTE",
+						Meta: map[string]any{
+							"vote": vote,
+						},
+					}
+					if err := ra.AddReferralAchievement(); err != nil {
+						log.Errorf("Failed to add achievement: %v", err)
+					}
+				}()
 			}
 
 		}
