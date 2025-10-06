@@ -4,9 +4,12 @@ SELECT p.*,
     row_to_json(r.*) AS round,
     (SELECT COUNT(*) FROM votes v WHERE v.project_id=p.id) AS total_votes,
     (
-        SELECT jsonb_object_agg(currency, amount)
+        SELECT jsonb_object_agg(currency, jsonb_build_object(
+            'amount', amount,
+            'rate', rate
+        ))
         FROM (
-            SELECT d.currency, SUM(d.amount) AS amount, AVG(d.rate)
+            SELECT d.currency, SUM(d.amount) AS amount, AVG(d.rate) AS rate
             FROM donations d
             WHERE d.project_id=p.id AND status='APPROVED'
             GROUP BY d.currency
