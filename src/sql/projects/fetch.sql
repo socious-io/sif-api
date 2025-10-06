@@ -6,7 +6,7 @@ SELECT p.*,
     (
         SELECT jsonb_object_agg(currency, amount)
         FROM (
-            SELECT d.currency, SUM(d.amount) AS amount
+            SELECT d.currency, SUM(d.amount) AS amount, AVG(d.rate)
             FROM donations d
             WHERE d.project_id=p.id AND status='APPROVED'
             GROUP BY d.currency
