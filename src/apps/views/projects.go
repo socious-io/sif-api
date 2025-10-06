@@ -305,70 +305,76 @@ func projectsGroup(router *gin.Engine) {
 
 		impactPoints := int(donation.Amount * rate)
 
-		if form.PaymentType == models.Fiat {
-			fiatService := config.Config.Payment.Fiats[0]
-			payment.SetToFiatMode(fiatService.Name)
-			if form.CardToken == nil && user.StripeCustomerID == nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "payment source card could not be found"})
-				return
-			}
-			if user.StripeCustomerID == nil {
-				cus, err := fiatService.AddCustomer(user.Email)
-				if err != nil {
+		// TEMP block for event we need to remove this after
+		eventSpensorshipDonation := form.Currency == "lovelace" && form.Amount == 1
+
+		if !eventSpensorshipDonation {
+			if form.PaymentType == models.Fiat {
+				fiatService := config.Config.Payment.Fiats[0]
+				payment.SetToFiatMode(fiatService.Name)
+				if form.CardToken == nil && user.StripeCustomerID == nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "payment source card could not be found"})
+					return
+				}
+				if user.StripeCustomerID == nil {
+					cus, err := fiatService.AddCustomer(user.Email)
+					if err != nil {
+						c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+						return
+					}
+
+					user.StripeCustomerID = &cus.ID
+					if err := user.Upsert(c.MustGet("ctx").(context.Context)); err != nil {
+						c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+						return
+					}
+				}
+
+				if form.CardToken != nil {
+					if _, err := fiatService.AttachPaymentMethod(*user.StripeCustomerID, *form.CardToken); err != nil {
+						c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+						return
+					}
+				}
+
+				if _, err := payment.AddIdentity(gopay.IdentityParams{
+					ID:      user.ID,
+					Account: *user.StripeCustomerID,
+				}); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+					return
+				}
+				if err := payment.Deposit(); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				}
+
+			} else {
+				payment.SetToCryptoMode(form.Currency, 1)
+				if _, err := payment.AddIdentity(gopay.IdentityParams{
+					ID:      user.ID,
+					Account: form.WalletAddress,
+				}); err != nil {
 					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 					return
 				}
 
-				user.StripeCustomerID = &cus.ID
-				if err := user.Upsert(c.MustGet("ctx").(context.Context)); err != nil {
+				if err := payment.ConfirmDeposit(form.TxID, form.Meta); err != nil {
 					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 					return
 				}
 			}
 
-			if form.CardToken != nil {
-				if _, err := fiatService.AttachPaymentMethod(*user.StripeCustomerID, *form.CardToken); err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-					return
-				}
-			}
-
-			if _, err := payment.AddIdentity(gopay.IdentityParams{
-				ID:      user.ID,
-				Account: *user.StripeCustomerID,
-			}); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-				return
-			}
-			if err := payment.Deposit(); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			}
-
-		} else {
-			payment.SetToCryptoMode(form.Currency, 1)
-			if _, err := payment.AddIdentity(gopay.IdentityParams{
-				ID:      user.ID,
-				Account: form.WalletAddress,
-			}); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-				return
-			}
-
-			if err := payment.ConfirmDeposit(form.TxID, form.Meta); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			if payment.Status == gopay.ON_HOLD || *payment.TransactionStatus == gopay.ACTION_REQUIRED {
+				c.JSON(http.StatusAccepted, gin.H{
+					"donation":        donation,
+					"message":         "payment is on hold",
+					"action_required": true,
+					"client_secret":   payment.ClientSecret,
+				})
 				return
 			}
 		}
 
-		if payment.Status == gopay.ON_HOLD || *payment.TransactionStatus == gopay.ACTION_REQUIRED {
-			c.JSON(http.StatusAccepted, gin.H{
-				"donation":        donation,
-				"message":         "payment is on hold",
-				"action_required": true,
-				"client_secret":   payment.ClientSecret,
-			})
-			return
-		}
 		donation.Status = models.DonationStatusApproved
 		if err := donation.Update(c.MustGet("ctx").(context.Context)); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
