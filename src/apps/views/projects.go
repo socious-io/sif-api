@@ -385,8 +385,20 @@ func projectsGroup(router *gin.Engine) {
 				log.Infof("Failed to create vote: %v", err)
 			} else {
 				impactPoints += 1
-			}
 
+				go func() {
+					ra := goaccount.ReferralAchievement{
+						RefereeID:       user.ID,
+						AchievementType: "VOTE",
+						Meta: map[string]any{
+							"vote": vote,
+						},
+					}
+					if err := ra.AddReferralAchievement(); err != nil {
+						log.Errorf("Failed to add achievement: %v", err)
+					}
+				}()
+			}
 		}
 
 		go func() {
@@ -427,6 +439,7 @@ func projectsGroup(router *gin.Engine) {
 
 	g.PUT("/donates/:id/confirm", auth.LoginRequired(), func(c *gin.Context) {
 		ctx := c.MustGet("ctx").(context.Context)
+		user := c.MustGet("user").(*models.User)
 
 		form := new(DonateDepositConfirmForm)
 		if err := c.ShouldBindJSON(form); err != nil {
@@ -446,6 +459,12 @@ func projectsGroup(router *gin.Engine) {
 			return
 		}
 
+		project, err := models.GetProject(donation.ProjectID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
 		if err := payment.ConfirmPayment(form.PaymentIntentID); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -458,6 +477,57 @@ func projectsGroup(router *gin.Engine) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+
+		rate := donation.Rate
+		if rate <= 0 || rate >= 2 {
+			rate = 1
+		}
+
+		impactPoints := int(donation.Amount * rate)
+		now := time.Now()
+		if now.After(project.Round.VotingStartAt) && now.Before(project.Round.VotingEndAt) {
+			vote := &models.Vote{
+				UserID:    user.ID,
+				ProjectID: project.ID,
+			}
+			if err := vote.Create(c.MustGet("ctx").(context.Context)); err != nil {
+				log.Infof("Failed to create vote: %v", err)
+			} else {
+				impactPoints += 1
+
+				go func() {
+					ra := goaccount.ReferralAchievement{
+						RefereeID:       user.ID,
+						AchievementType: "VOTE",
+						Meta: map[string]any{
+							"vote": vote,
+						},
+					}
+					if err := ra.AddReferralAchievement(); err != nil {
+						log.Errorf("Failed to add achievement: %v", err)
+					}
+				}()
+			}
+
+		}
+
+		go func() {
+			ip := goaccount.ImpactPoint{
+				UserID:              user.ID,
+				SocialCause:         project.SocialCause,
+				SocialCauseCategory: string(utils.GetSDG(project.SocialCause)),
+				TotalPoints:         impactPoints,
+				Type:                "DONATION",
+				UniqueTag:           donation.ID.String(),
+				Value:               float64(impactPoints),
+				Meta: map[string]any{
+					"donation": donation,
+				},
+			}
+			if err := ip.AddImpactPoint(); err != nil {
+				log.Errorf("Failed to add impact point: %v", err)
+			}
+		}()
 
 		c.JSON(http.StatusOK, gin.H{
 			"donation": donation,
