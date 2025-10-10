@@ -15,6 +15,11 @@ SELECT p.*,
             GROUP BY d.currency
         ) subquery
     ) AS total_donations
+    (
+        SELECT COALESCE(SUM(d.total_donation_amount * d.avg_rate), 0)::numeric(18,2)
+        FROM donations d 
+        WHERE d.project_id=p.id AND d.status='APPROVED'
+    ) AS total_raw_donation_usd
 FROM projects p
 JOIN identities i ON i.id=p.identity_id
 LEFT JOIN media m ON m.id=p.cover_id

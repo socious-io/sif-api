@@ -36,8 +36,9 @@ type Project struct {
 	Round     *Round         `db:"-" json:"round"`
 	RoundJson types.JSONText `db:"round" json:"-"`
 
-	TotalVotes     int            `db:"total_votes" json:"total_votes"`
-	TotalDonations types.JSONText `db:"total_donations" json:"total_donations"`
+	TotalVotes          int            `db:"total_votes" json:"total_votes"`
+	TotalDonations      types.JSONText `db:"total_donations" json:"total_donations"`
+	TotalRawDonationUSD float64        `db:"total_raw_donation_usd" json:"total_raw_donation_usd"`
 	// TotalDonations float64 `db:"total_donations" json:"total_donations"`
 
 	WalletAddress string    `db:"wallet_address" json:"wallet_address"`
